@@ -7,7 +7,7 @@ use App\Console\Commands\ProccessCommentsCommand;
 use App\Console\Commands\StatisticCommand;
 use App\Console\Commands\TestCommand;
 use App\Console\Commands\TestMessageCommand;
-use App\Console\Commands\UpdateWebhookUrlCommand;
+use App\Console\Commands\GenerateCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        GenerateCommand::class
     ];
 
     /**

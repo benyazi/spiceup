@@ -6,22 +6,19 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>
-
+        Screen page
     </title>
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/screenView/app.js') }}" defer></script>
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
-
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/screenView/screenView.css') }}" rel="stylesheet">
 </head>
 <body>
-    <div>
-        <main class="py-4">
-            @yield('content')
-        </main>
+    <div id="screen-view-app">
+    @yield('content')
     </div>
     <!--
     *************************************************

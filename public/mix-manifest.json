@@ -1,6 +1,6 @@
 {
-    "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css",
-    "/css/oldmash/oldmash.css": "/css/oldmash/oldmash.css",
-    "/js/oldmash/app.js": "/js/oldmash/app.js"
+    "/js/screenDashboard/app.js": "/js/screenDashboard/app.js",
+    "/js/screenView/app.js": "/js/screenView/app.js",
+    "/css/screenView/screenView.css": "/css/screenView/screenView.css",
+    "/css/screenDashboard/screenDashboard.css": "/css/screenDashboard/screenDashboard.css"
 }

@@ -1,0 +1,71 @@
+
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+html, body {
+  background-color: transparent;
+}
+.b_screenWrap {
+  position: fixed;
+  top:0;
+  left:0;
+  right: 0;
+  bottom: 0;
+  //background-color: #1b4b72;
+  background-color: transparent;
+}
+
+.b_sw {
+  position: absolute;
+  top:20px;
+  left: 20px;
+  & > div {
+    float: left;
+    display: inline-block;
+  }
+  .b_sw_logo {
+    margin-top: -5px;
+    img {
+      width: 35px;
+    }
+  }
+  .b_sw_teams {
+    font-weight: bold;
+    & > div {
+      display: inline-block;
+      float: left;
+      padding: 5px 10px;
+      background-color: #fff;
+    }
+    .b_sw_score {
+      background-color: cornflowerblue;
+    }
+    .b_sw_team_color {
+      width: 10px;
+      padding: 5px 0;
+      border-left: 2px solid #fff;
+      border-right: 2px solid #fff;
+    }
+  }
+}
+.b_tw {
+  font-weight: bold;
+  position: absolute;
+  top: 20px;
+  left: 225px;
+  overflow: hidden;
+  & > div {
+    float: left;
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #fff;
+  }
+  .b_tw_adv_size {
+    background-color: #fde300;
+  }
+}

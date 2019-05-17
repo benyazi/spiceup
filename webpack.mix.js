@@ -11,7 +11,7 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-   .sass('resources/sass/app.scss', 'public/css')
-    .js('resources/js/oldmash/app.js', 'public/js/oldmash')
-    .sass('resources/sass/oldmash.scss', 'public/css/oldmash');
+mix.js('resources/js/screen-view/app.js', 'public/js/screenView')
+    .sass('resources/sass/screenView.scss', 'public/css/screenView')
+    .js('resources/js/screen-dashboard/app.js', 'public/js/screenDashboard')
+    .sass('resources/sass/screenDashboard.scss', 'public/css/screenDashboard');
