@@ -1786,13 +1786,22 @@ __webpack_require__.r(__webpack_exports__);
       screen: null
     };
   },
+  created: function created() {
+    var channel = PusherApp.subscribe('score-widget-' + this.uuid);
+    channel.bind('AddedNewWidget', this.addWidget);
+  },
   mounted: function mounted() {
     this.getData();
   },
   methods: {
+    addWidget: function addWidget(data) {
+      var newWidget = data.newWidget;
+      this.$set(this.screen.widgets, newWidget.id, newWidget);
+    },
     getData: function getData() {
       var _this = this;
 
+      this.isLoading = true;
       axios.get('/data/' + this.uuid).then(function (resp) {
         _this.screen = resp.data;
         _this.isLoading = false;
@@ -1842,6 +1851,7 @@ __webpack_require__.r(__webpack_exports__);
     channel.bind('ScoreChanged', this.changeScore);
     channel.bind('ScorePositionChanged', this.changePositionScore);
     channel.bind('UpdateTeamData', this.updateTeamData);
+    channel.bind('WidgetActivateChanged', this.changeActivate);
   },
   computed: {
     positionTop: function positionTop() {
@@ -1880,7 +1890,18 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
+    changeActivate: function changeActivate(data) {
+      if (data.widget_id != this.widget.id) {
+        return;
+      }
+
+      this.widget.is_active = data.value;
+    },
     updateTeamData: function updateTeamData(data) {
+      if (data.widget_id != this.widget.id) {
+        return;
+      }
+
       if (data.data.team) {
         this.teamHome = data.data.team.home;
         this.teamAway = data.data.team.away;
@@ -1892,6 +1913,10 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     changeScore: function changeScore(data) {
+      if (data.widget_id != this.widget.id) {
+        return;
+      }
+
       if (data.team == 'home') {
         this.scoreHome = data.score;
       } else {
@@ -1899,6 +1924,10 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     changePositionScore: function changePositionScore(data) {
+      if (data.widget_id != this.widget.id) {
+        return;
+      }
+
       this.widget.data.position = data.position;
     }
   }
@@ -1991,14 +2020,14 @@ __webpack_require__.r(__webpack_exports__);
     },
     positionTop: function positionTop() {
       if (this.widget.data.position) {
-        return this.widget.data.position.top;
+        return this.widget.data.position.top + 'px';
       }
 
       return 0;
     },
     positionLeft: function positionLeft() {
       if (this.widget.data.position) {
-        return this.widget.data.position.left;
+        return this.widget.data.position.left + 'px';
       }
 
       return 0;
@@ -2019,6 +2048,8 @@ __webpack_require__.r(__webpack_exports__);
     channel.bind('TimerChangedTime', this.changeTime);
     channel.bind('AdvancedSizeChanged', this.changeAdvancedSize);
     channel.bind('WidgetPositionChanged', this.changePositionScore);
+    channel.bind('UpdatePartValue', this.updatePartValue);
+    channel.bind('WidgetActivateChanged', this.changeActivate);
   },
   methods: {
     getFullMinutes: function getFullMinutes(seconds) {
@@ -2047,6 +2078,13 @@ __webpack_require__.r(__webpack_exports__);
 
       this.state = data.state;
     },
+    updatePartValue: function updatePartValue(data) {
+      if (data.widget_id != this.widget.id) {
+        return;
+      }
+
+      this.part.maxValue = data.value;
+    },
     changeTime: function changeTime(data) {
       if (data.widget_id != this.widget.id) {
         return;
@@ -2054,6 +2092,13 @@ __webpack_require__.r(__webpack_exports__);
 
       this.startPoint = data.startPoint;
       this.timestamp = data.timestamp;
+    },
+    changeActivate: function changeActivate(data) {
+      if (data.widget_id != this.widget.id) {
+        return;
+      }
+
+      this.widget.is_active = data.value;
     },
     changeAdvancedSize: function changeAdvancedSize(data) {
       if (data.widget_id != this.widget.id) {
@@ -46312,7 +46357,11 @@ var render = function() {
     "div",
     {
       staticClass: "b_widgetWrap b_sw",
-      style: { top: _vm.positionTop, left: _vm.positionLeft }
+      style: {
+        top: _vm.positionTop,
+        left: _vm.positionLeft,
+        display: _vm.widget.is_active ? "block" : "none"
+      }
     },
     [
       _c("div", { staticClass: "b_sw_logo" }, [
@@ -46385,7 +46434,11 @@ var render = function() {
     "div",
     {
       staticClass: "b_widgetWrap b_tw",
-      style: { top: _vm.positionTop, left: _vm.positionLeft }
+      style: {
+        top: _vm.positionTop,
+        left: _vm.positionLeft,
+        display: _vm.widget.is_active ? "block" : "none"
+      }
     },
     [
       _c("div", { staticClass: "b_tw_time" }, [

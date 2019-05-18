@@ -92,12 +92,32 @@ class TimerWidgetController extends Controller
     {
         $widget = SceneWidget::find($widgetId);
         $widgetData = $widget->data;
+        if($advancedSize == 'clear') {
+            $advancedSize = null;
+        }
         $widgetData['advancedSize'] = $advancedSize;
         $widget->data = $widgetData;
         $widget->save();
         $screen = $widget->scene->screen;
         event(new CustomWidgetEventEvent($screen->uuid, 'AdvancedSizeChanged', [
             'advancedSize' => $widgetData['advancedSize'],
+            'widget_id' => $widget->id
+        ]));
+        return [
+            'success' => true,
+            'widgetData' => $widgetData
+        ];
+    }
+    public function part(Request $request, $widgetId, $value)
+    {
+        $widget = SceneWidget::find($widgetId);
+        $widgetData = $widget->data;
+        $widgetData['part']['maxValue'] = $value;
+        $widget->data = $widgetData;
+        $widget->save();
+        $screen = $widget->scene->screen;
+        event(new CustomWidgetEventEvent($screen->uuid, 'UpdatePartValue', [
+            'value' => $value,
             'widget_id' => $widget->id
         ]));
         return [

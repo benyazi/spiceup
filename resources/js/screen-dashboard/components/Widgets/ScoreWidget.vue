@@ -79,6 +79,18 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-12">
+                <button class="btn btn-primary" @click="activate">
+                    <template v-if="widget.is_active">
+                        Отключить
+                    </template>
+                    <template v-else>
+                        Включить
+                    </template>
+                </button>
+            </div>
+        </div>
         <div class="curtain" v-if="isLoading"></div>
     </div>
 </template>
@@ -126,6 +138,7 @@
                     }
                 };
                 axios.post('/widget/score/'+this.widget.id+'/saveSetting', {setting: setting}).then((resp) => {
+                    this.widget.data = resp.data.widgetData;
                     this.refreshData();
                     this.isLoading = false;
                 });
@@ -147,7 +160,15 @@
                     this.refreshData();
                     this.isLoading = false;
                 });
-            }
+            },
+            activate() {
+                this.isLoading = true;
+                let value = !this.widget.is_active;
+                axios.get('/widget/activate/'+this.widget.id+'/' + value).then((resp) => {
+                    this.isLoading = false;
+                    this.widget.is_active = value;
+                });
+            },
         }
     }
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <div class="b_widgetWrap b_tw" :style="{top:positionTop,left:positionLeft}">
+    <div class="b_widgetWrap b_tw" :style="{top:positionTop,left:positionLeft,display:(widget.is_active)?'block':'none'}">
         <div class="b_tw_time">
             {{currentTimeString}}
         </div>
@@ -65,13 +65,13 @@
             },
             positionTop() {
                 if(this.widget.data.position) {
-                    return this.widget.data.position.top;
+                    return this.widget.data.position.top + 'px';
                 }
                 return 0;
             },
             positionLeft() {
                 if(this.widget.data.position) {
-                    return this.widget.data.position.left;
+                    return this.widget.data.position.left + 'px';
                 }
                 return 0;
             },
@@ -89,6 +89,8 @@
             channel.bind('TimerChangedTime', this.changeTime);
             channel.bind('AdvancedSizeChanged', this.changeAdvancedSize);
             channel.bind('WidgetPositionChanged', this.changePositionScore);
+            channel.bind('UpdatePartValue', this.updatePartValue);
+            channel.bind('WidgetActivateChanged', this.changeActivate);
         },
         methods: {
             getFullMinutes(seconds){
@@ -114,12 +116,24 @@
                 }
                 this.state = data.state;
             },
+            updatePartValue(data) {
+                if(data.widget_id != this.widget.id) {
+                    return;
+                }
+                this.part.maxValue = data.value;
+            },
             changeTime(data) {
                 if(data.widget_id != this.widget.id) {
                     return;
                 }
                 this.startPoint = data.startPoint;
                 this.timestamp = data.timestamp;
+            },
+            changeActivate(data) {
+                if(data.widget_id != this.widget.id) {
+                    return;
+                }
+                this.widget.is_active = data.value;
             },
             changeAdvancedSize(data) {
                 if(data.widget_id != this.widget.id) {

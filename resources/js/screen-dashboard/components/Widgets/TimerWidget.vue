@@ -39,6 +39,17 @@
                     </div>
                 </div>
             </div>
+            <div class="col-12 mb-1">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Change part</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="10:00" v-model="newPartMax">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" @click="updatePart()">Update</button>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="col-12">
@@ -53,6 +64,18 @@
                 <div>
                     <button class="btn btn-primary" @click="saveSetting()">Save setting</button>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <button class="btn btn-primary" @click="activate">
+                    <template v-if="widget.is_active">
+                        Отключить
+                    </template>
+                    <template v-else>
+                        Включить
+                    </template>
+                </button>
             </div>
         </div>
         <div class="curtain" v-if="isLoading"></div>
@@ -82,6 +105,7 @@
                     }
                 },
                 newTime: null,
+                newPartMax: null,
             }
         },
         computed: {
@@ -145,8 +169,30 @@
                     this.isLoading = false;
                 });
             },
+            activate() {
+                this.isLoading = true;
+                let value = !this.widget.is_active;
+                axios.get('/widget/activate/'+this.widget.id+'/' + value).then((resp) => {
+                    this.isLoading = false;
+                    this.widget.is_active = value;
+                });
+            },
             updateAdvancedTime() {
-                let url = '/widget/timer/advanced_size/'+this.widget.id+'/'+this.advancedSize;
+                let at = this.advancedSize;
+                if(at == '' || at == 0) {
+                    at = 'clear';
+                }
+                let url = '/widget/timer/advanced_size/'+this.widget.id+'/'+at;
+                this.isLoading = true;
+                axios.get(url).then((resp) => {
+                    this.isLoading = false;
+                });
+            },
+            updatePart() {
+                this.isLoading = true;
+                let val = this.newPartMax.split(':');
+                this.part.maxValue = parseInt(val[0]*60) + parseInt(val[1]);
+                let url = '/widget/timer/part/'+this.widget.id+'/'+this.part.maxValue;
                 this.isLoading = true;
                 axios.get(url).then((resp) => {
                     this.isLoading = false;
@@ -175,6 +221,9 @@
                     this.advancedSize = this.widget.data.advancedSize;
                 }
                 this.setting.position = this.widget.data.position;
+                let min = this.getFullMinutes(this.part.maxValue);
+                this.newPartMax = min + ':' + (this.part.maxValue - (min*60));
+
             },
             getFullMinutes(seconds){
                 return (seconds - seconds % 60) / 60;

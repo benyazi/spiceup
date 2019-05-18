@@ -1,5 +1,5 @@
 <template>
-    <div class="b_widgetWrap b_sw" :style="{top:positionTop,left:positionLeft}">
+    <div class="b_widgetWrap b_sw" :style="{top:positionTop,left:positionLeft,display:(widget.is_active)?'block':'none'}">
         <div class="b_sw_logo">
             <img :src="tLogo">
         </div>
@@ -29,6 +29,7 @@
             channel.bind('ScoreChanged', this.changeScore);
             channel.bind('ScorePositionChanged', this.changePositionScore);
             channel.bind('UpdateTeamData', this.updateTeamData);
+            channel.bind('WidgetActivateChanged', this.changeActivate);
         },
         computed: {
             positionTop() {
@@ -65,7 +66,16 @@
             }
         },
         methods: {
+            changeActivate(data) {
+                if(data.widget_id != this.widget.id) {
+                    return;
+                }
+                this.widget.is_active = data.value;
+            },
             updateTeamData(data) {
+                if(data.widget_id != this.widget.id) {
+                    return;
+                }
                 if(data.data.team) {
                     this.teamHome = data.data.team.home;
                     this.teamAway = data.data.team.away;
@@ -76,6 +86,9 @@
                 }
             },
             changeScore(data) {
+                if(data.widget_id != this.widget.id) {
+                    return;
+                }
                 if(data.team == 'home') {
                     this.scoreHome = data.score;
                 } else {
@@ -83,6 +96,9 @@
                 }
             },
             changePositionScore(data) {
+                if(data.widget_id != this.widget.id) {
+                    return;
+                }
                 this.widget.data.position = data.position;
             }
         }

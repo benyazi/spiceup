@@ -73,7 +73,8 @@ class ShowController extends Controller
                 'id' => $widget->id,
                 'widgetData' => $widgetData,
                 'data' => $widgetData,
-                'type' => $widget->widget_type
+                'type' => $widget->widget_type,
+                'is_active' => $widget->is_active
             ];
         }
         return [

@@ -22,14 +22,22 @@
                 screen: null
             }
         },
+        created() {
+            var channel = PusherApp.subscribe('score-widget-' + this.uuid);
+            channel.bind('AddedNewWidget', this.addWidget);
+        },
         mounted() {
             this.getData();
         },
         methods: {
+            addWidget(data) {
+                let newWidget = data.newWidget;
+                this.$set(this.screen.widgets, newWidget.id, newWidget);
+            },
             getData() {
+                this.isLoading = true;
                 axios.get('/data/'+this.uuid).then((resp)=>{
                     this.screen = resp.data;
-
                     this.isLoading = false;
                 });
             }

@@ -1,6 +1,17 @@
 <template>
     <div class="b_screenDashboard">
         <div class="row">
+            <div class="input-group">
+                <select class="custom-select" v-model="newWidgetType">
+                    <option value="score">Score</option>
+                    <option value="timer">Timer</option>
+                </select>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" @click="addNewWidget">Add widget</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <template v-if="!isLoading">
                 <template v-for="widget in screen.widgets">
                     <template v-if="widget.type=='score'">
@@ -25,14 +36,23 @@
         data() {
             return {
                 isLoading: true,
-                screen: null
+                screen: null,
+                newWidgetType: 'score'
             }
         },
         mounted() {
             this.getData();
         },
         methods: {
+            addNewWidget() {
+                this.isLoading = true;
+                axios.get('/screen/'+this.screen.id+'/addwidget/'+this.newWidgetType).then((resp)=>{
+                    this.screen.widgets[resp.data.newWidget.id] = resp.data.newWidget;
+                    this.isLoading = false;
+                });
+            },
             getData() {
+                this.isLoading = true;
                 axios.get('/data/'+this.uuid).then((resp)=>{
                     this.screen = resp.data;
                     this.isLoading = false;

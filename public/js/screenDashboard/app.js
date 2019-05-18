@@ -1784,24 +1784,46 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['uuid'],
   data: function data() {
     return {
       isLoading: true,
-      screen: null
+      screen: null,
+      newWidgetType: 'score'
     };
   },
   mounted: function mounted() {
     this.getData();
   },
   methods: {
-    getData: function getData() {
+    addNewWidget: function addNewWidget() {
       var _this = this;
 
-      axios.get('/data/' + this.uuid).then(function (resp) {
-        _this.screen = resp.data;
+      this.isLoading = true;
+      axios.get('/screen/' + this.screen.id + '/addwidget/' + this.newWidgetType).then(function (resp) {
+        _this.screen.widgets[resp.data.newWidget.id] = resp.data.newWidget;
         _this.isLoading = false;
+      });
+    },
+    getData: function getData() {
+      var _this2 = this;
+
+      this.isLoading = true;
+      axios.get('/data/' + this.uuid).then(function (resp) {
+        _this2.screen = resp.data;
+        _this2.isLoading = false;
       });
     }
   }
@@ -1818,6 +1840,18 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -1947,6 +1981,8 @@ __webpack_require__.r(__webpack_exports__);
       axios.post('/widget/score/' + this.widget.id + '/saveSetting', {
         setting: setting
       }).then(function (resp) {
+        _this.widget.data = resp.data.widgetData;
+
         _this.refreshData();
 
         _this.isLoading = false;
@@ -1972,6 +2008,16 @@ __webpack_require__.r(__webpack_exports__);
 
         _this2.isLoading = false;
       });
+    },
+    activate: function activate() {
+      var _this3 = this;
+
+      this.isLoading = true;
+      var value = !this.widget.is_active;
+      axios.get('/widget/activate/' + this.widget.id + '/' + value).then(function (resp) {
+        _this3.isLoading = false;
+        _this3.widget.is_active = value;
+      });
     }
   }
 });
@@ -1987,6 +2033,29 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2069,7 +2138,8 @@ __webpack_require__.r(__webpack_exports__);
           left: 0
         }
       },
-      newTime: null
+      newTime: null,
+      newPartMax: null
     };
   },
   computed: {
@@ -2149,24 +2219,52 @@ __webpack_require__.r(__webpack_exports__);
         _this3.isLoading = false;
       });
     },
-    updateAdvancedTime: function updateAdvancedTime() {
+    activate: function activate() {
       var _this4 = this;
 
-      var url = '/widget/timer/advanced_size/' + this.widget.id + '/' + this.advancedSize;
+      this.isLoading = true;
+      var value = !this.widget.is_active;
+      axios.get('/widget/activate/' + this.widget.id + '/' + value).then(function (resp) {
+        _this4.isLoading = false;
+        _this4.widget.is_active = value;
+      });
+    },
+    updateAdvancedTime: function updateAdvancedTime() {
+      var _this5 = this;
+
+      var at = this.advancedSize;
+
+      if (at == '' || at == 0) {
+        at = 'clear';
+      }
+
+      var url = '/widget/timer/advanced_size/' + this.widget.id + '/' + at;
       this.isLoading = true;
       axios.get(url).then(function (resp) {
-        _this4.isLoading = false;
+        _this5.isLoading = false;
+      });
+    },
+    updatePart: function updatePart() {
+      var _this6 = this;
+
+      this.isLoading = true;
+      var val = this.newPartMax.split(':');
+      this.part.maxValue = parseInt(val[0] * 60) + parseInt(val[1]);
+      var url = '/widget/timer/part/' + this.widget.id + '/' + this.part.maxValue;
+      this.isLoading = true;
+      axios.get(url).then(function (resp) {
+        _this6.isLoading = false;
       });
     },
     changeState: function changeState() {
-      var _this5 = this;
+      var _this7 = this;
 
       var newState = this.state === 'pause' ? 'play' : 'pause';
       var url = '/widget/timer/state/' + this.widget.id + '/' + newState;
       this.isLoading = true;
       axios.get(url).then(function (resp) {
-        _this5.state = resp.data.state;
-        _this5.isLoading = false;
+        _this7.state = resp.data.state;
+        _this7.isLoading = false;
       });
     },
     loadData: function loadData() {
@@ -2186,6 +2284,8 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       this.setting.position = this.widget.data.position;
+      var min = this.getFullMinutes(this.part.maxValue);
+      this.newPartMax = min + ':' + (this.part.maxValue - min * 60);
     },
     getFullMinutes: function getFullMinutes(seconds) {
       return (seconds - seconds % 60) / 60;
@@ -37492,6 +37592,57 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "b_screenDashboard" }, [
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "input-group" }, [
+        _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.newWidgetType,
+                expression: "newWidgetType"
+              }
+            ],
+            staticClass: "custom-select",
+            on: {
+              change: function($event) {
+                var $$selectedVal = Array.prototype.filter
+                  .call($event.target.options, function(o) {
+                    return o.selected
+                  })
+                  .map(function(o) {
+                    var val = "_value" in o ? o._value : o.value
+                    return val
+                  })
+                _vm.newWidgetType = $event.target.multiple
+                  ? $$selectedVal
+                  : $$selectedVal[0]
+              }
+            }
+          },
+          [
+            _c("option", { attrs: { value: "score" } }, [_vm._v("Score")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "timer" } }, [_vm._v("Timer")])
+          ]
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "input-group-append" }, [
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-outline-secondary",
+              attrs: { type: "button" },
+              on: { click: _vm.addNewWidget }
+            },
+            [_vm._v("Add widget")]
+          )
+        ])
+      ])
+    ]),
+    _vm._v(" "),
     _c(
       "div",
       { staticClass: "row" },
@@ -37848,6 +37999,21 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-12" }, [
+          _c(
+            "button",
+            { staticClass: "btn btn-primary", on: { click: _vm.activate } },
+            [
+              _vm.widget.is_active
+                ? [_vm._v("\n                    Отключить\n                ")]
+                : [_vm._v("\n                    Включить\n                ")]
+            ],
+            2
+          )
+        ])
+      ]),
+      _vm._v(" "),
       _vm.isLoading ? _c("div", { staticClass: "curtain" }) : _vm._e()
     ]
   )
@@ -38075,6 +38241,50 @@ var render = function() {
             )
           ])
         ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-12 mb-1" }, [
+        _c("div", { staticClass: "input-group" }, [
+          _vm._m(2),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.newPartMax,
+                expression: "newPartMax"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { type: "text", placeholder: "10:00" },
+            domProps: { value: _vm.newPartMax },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.newPartMax = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group-append" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-secondary",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.updatePart()
+                  }
+                }
+              },
+              [_vm._v("Update")]
+            )
+          ])
+        ])
       ])
     ]),
     _vm._v(" "),
@@ -38147,6 +38357,21 @@ var render = function() {
       ])
     ]),
     _vm._v(" "),
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-12" }, [
+        _c(
+          "button",
+          { staticClass: "btn btn-primary", on: { click: _vm.activate } },
+          [
+            _vm.widget.is_active
+              ? [_vm._v("\n                    Отключить\n                ")]
+              : [_vm._v("\n                    Включить\n                ")]
+          ],
+          2
+        )
+      ])
+    ]),
+    _vm._v(" "),
     _vm.isLoading ? _c("div", { staticClass: "curtain" }) : _vm._e()
   ])
 }
@@ -38169,6 +38394,14 @@ var staticRenderFns = [
       _c("span", { staticClass: "input-group-text" }, [
         _vm._v("Change advanced time value")
       ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("Change part")])
     ])
   }
 ]

@@ -43,7 +43,8 @@ class ScoreWidgetController extends Controller
         $widget->save();
         event(new ScoreChangedEvent($screen->uuid, [
             'team' => $team,
-            'score' => $score
+            'score' => $score,
+            'widget_id' => $widget->id
         ]));
         return [
             'success' => true,
@@ -67,10 +68,12 @@ class ScoreWidgetController extends Controller
         $widget->save();
         $screen = $widget->scene->screen;
         event(new ScorePositionChangedEvent($screen->uuid, [
-            'position' => $widgetData['position']
+            'position' => $widgetData['position'],
+            'widget_id' => $widget->id
         ]));
         event(new CustomWidgetEventEvent($screen->uuid, 'UpdateTeamData', [
-            'data' => $widgetData
+            'data' => $widgetData,
+            'widget_id' => $widget->id
         ]));
         return [
             'success' => true,
