@@ -5,6 +5,7 @@ use App\Events\ScoreWidget\CustomWidgetEventEvent;
 use App\Events\GithubEvent;
 use App\Models\Github\Events;
 use App\Models\Github\Push;
+use Illuminate\Support\Facades\DB;
 
 class Github
 {
@@ -43,8 +44,27 @@ class Github
         $push->commit_count = $commits;
         //save
         $push->save();
+        $rates = [];
+        $users = DB::table('github_pushes')
+            ->select(DB::raw('sum(commit_count_all) as commit_count_all, sender'))
+            ->where('commit_count', '>', 0)
+            ->whereNotNull('sender')
+            ->groupBy('sender')
+            ->orderBy('commit_count_all', 'DESC')
+            ->limit(10)
+            ->get();
+        $place = 1;
+        foreach ($users as $user) {
+            $rates[] = [
+                'place' => $place,
+                'sender' => $user->sender,
+                'count' => $user->commit_count_all
+            ];
+            $place++;
+        }
         event(new GithubEvent('NewPush', [
-            'pushItem' => $push->toArray()
+            'pushItem' => $push->toArray(),
+            'rates' => $rates
         ]));
     }
 }

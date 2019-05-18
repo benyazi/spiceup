@@ -2,7 +2,7 @@
     <div class="b_widgetDashboardWrap b_dsw" :class="{'is-loading':isLoading}">
         <div class="row">
             <div class="col-12">
-                <h3>Github Push</h3>
+                <h3>Github Rate</h3>
             </div>
         </div>
         <div class="row mb-1">

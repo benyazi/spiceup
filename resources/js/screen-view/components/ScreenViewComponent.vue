@@ -14,6 +14,9 @@
                 <template v-else-if="widget.type == 'github_push'">
                     <github-push-widget :screen="screen" :widget="widget"></github-push-widget>
                 </template>
+                <template v-else-if="widget.type == 'github_rate'">
+                    <github-rate-widget :screen="screen" :widget="widget"></github-rate-widget>
+                </template>
             </template>
         </template>
     </div>
