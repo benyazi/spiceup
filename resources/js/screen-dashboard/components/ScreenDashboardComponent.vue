@@ -5,6 +5,7 @@
                 <select class="custom-select" v-model="newWidgetType">
                     <option value="score">Score</option>
                     <option value="timer">Timer</option>
+                    <option value="squad">Squad</option>
                 </select>
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" @click="addNewWidget">Add widget</button>
@@ -13,7 +14,7 @@
         </div>
         <div class="row">
             <template v-if="!isLoading">
-                <template v-for="widget in screen.widgets">
+                <template v-if="widget" v-for="widget in screen.widgets">
                     <template v-if="widget.type=='score'">
                         <div class="col-4">
                         <score-widget :screen="screen" :widget="widget"></score-widget>
@@ -22,6 +23,11 @@
                     <template v-else-if="widget.type == 'timer'">
                         <div class="col-4">
                         <timer-widget :screen="screen" :widget="widget"></timer-widget>
+                        </div>
+                    </template>
+                    <template v-else-if="widget.type == 'squad'">
+                        <div class="col-4">
+                        <squad-widget :screen="screen" :widget="widget"></squad-widget>
                         </div>
                     </template>
                 </template>
@@ -45,6 +51,9 @@
         },
         methods: {
             addNewWidget() {
+                if(this.isLoading) {
+                    return;
+                }
                 this.isLoading = true;
                 axios.get('/screen/'+this.screen.id+'/addwidget/'+this.newWidgetType).then((resp)=>{
                     this.screen.widgets[resp.data.newWidget.id] = resp.data.newWidget;

@@ -1,6 +1,6 @@
 
 // Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
+@import url('https://fonts.googleapis.com/css?family=Exo+2:400,700|PT+Sans+Narrow:400,700|Roboto:400,700&display=swap&subset=cyrillic');
 
 // Variables
 @import 'variables';
@@ -67,5 +67,76 @@ html, body {
   }
   .b_tw_adv_size {
     background-color: #fde300;
+  }
+}
+.b_sqw {
+  font-weight: bold;
+  position: absolute;
+  display: inline-block;
+  overflow: hidden;
+  .b_sq_teams {
+    width: 610px;
+    & > div {
+      display: inline-block;
+      float: left;
+      width: 300px;
+
+    }
+  }
+  .b_sq_team {
+    text-align: right;
+    &.b_sq_team--second {
+      text-align: left;
+      margin-left: 10px;
+    }
+    .sq_Name {
+      font-weight: bold;
+      font-size: 20px;
+      padding: 10px 15px;
+      background-color: #1d2124;
+      color: #fff;
+    }
+    .sq_Coach {
+      & > div {
+        padding: 5px 5px;
+      }
+      .sq_subtitle {
+        background-color: #227dc7;
+        color: #000;
+      }
+    }
+    .sq_list {
+      & > div {
+        font-size: 12px;
+        font-weight: bold;
+        background-color: #3495e3;
+        color: #000;
+      }
+      .sq_subtitle {
+        background-color: #227dc7;
+        color: #000;
+        padding: 5px 5px;
+      }
+      .sq_list_item {
+        overflow: hidden;
+        & > div {
+          display: inline-block;
+          float: left;
+        }
+        .sq_list_item_name {
+          width: 260px;
+          background-color: #3495e3;
+          color: #000;
+          padding: 5px 5px;
+        }
+        .sq_list_item_number {
+          width: 40px;
+          text-align: center;
+          background-color: #1b4b72;
+          color: #fff;
+          padding: 5px 5px;
+        }
+      }
+    }
   }
 }

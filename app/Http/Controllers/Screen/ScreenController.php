@@ -10,6 +10,7 @@ use App\Models\SceneWidget;
 use App\Models\Screen;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ScreenController extends Controller
 {
@@ -39,12 +40,25 @@ class ScreenController extends Controller
 
     public function add()
     {
-        return view('screen.add');
+        $uuid = md5(microtime());
+        $screen = new Screen();
+        $screen->name = $uuid;
+        $screen->uuid = $uuid;
+        $screen->user_id =  Auth::id();
+        $screen->save();
+        $scene = new Scene();
+        $scene->screen_id = $screen->id;
+        $scene->name = 'Scene 1';
+        $scene->save();
+        return redirect()->route('screen.list');
     }
 
     public function remove(Request $request, $id)
     {
-        return view('screen.remove');
+        /** @var Screen $screen */
+        $screen = Screen::find($id);
+        $screen->delete();
+        return redirect()->route('screen.list');
     }
 
     public function edit(Request $request, $id)

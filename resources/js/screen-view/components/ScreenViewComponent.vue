@@ -8,6 +8,9 @@
                 <template v-else-if="widget.type == 'timer'">
                     <timer-widget :screen="screen" :widget="widget"></timer-widget>
                 </template>
+                <template v-else-if="widget.type == 'squad'">
+                    <squad-widget :screen="screen" :widget="widget"></squad-widget>
+                </template>
             </template>
         </template>
     </div>

@@ -1,4 +1,10 @@
 @extends('layouts.app')
+@push('scripts')
+    <script src="{{ asset('js/app.js') }}" defer></script>
+@endpush
+@push('styles')
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+@endpush
 
 @section('content')
     <div class="container">
@@ -8,7 +14,7 @@
                     <div class="card-header">List of screens</div>
                     <div class="card-body">
                         <div>
-                            <a href="{{route('screen.add')}}">+ Add screen</a>
+                            <a class="btn btn-primary" href="{{route('screen.add')}}">+ Add screen</a>
                         </div>
                         <table class="table table-striped">
                             <thead>
@@ -29,6 +35,9 @@
                                             </a>
                                             <a class="btn btn-danger" href="{{route('screen.remove', ['id' => $screen->id])}}">
                                                 Remove
+                                            </a>
+                                            <a class="btn btn-info" target="_blank" href="{{env('APP_URL').'/s/'.$screen->uuid}}">
+                                                View
                                             </a>
                                         </td>
                                     </tr>
