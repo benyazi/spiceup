@@ -47,7 +47,7 @@ class Github
         $rates = [];
         //get rates
         $users = DB::table('github_pushes')
-            ->select(DB::raw('sum(commit_count_all) as commit_count_all, sender'))
+            ->select(DB::raw('sum(commit_count) as commit_count_all, sender'))
             ->where('commit_count', '>', 0)
             ->whereNotNull('sender')
             ->groupBy('sender')
