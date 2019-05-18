@@ -1,32 +1,34 @@
 <template>
-    <div class="b_widgetDashboardWrap b_dsw">
+    <div class="b_widgetDashboardWrap b_dtw">
         <div class="row">
-            <div class="col-6">
-                <div>
-                    <button class="btn btn-primary w-100" @click="changeScore('home','add')">+</button>
-                </div>
-                <div class="text-center p-1" style="font-size: 36px;font-weight: bold">
-                    {{scoreHome}}
-                </div>
-                <div>
-                    <button class="btn btn-primary w-100" @click="changeScore('home','sub')">-</button>
-                </div>
-                <div>
-                    {{teamHome}}
+            <div class="col-12">
+                Время: {{currentTimeString}}
+            </div>
+            <div class="col-12">
+                Дополнительное время(+{{advancedSize}}): {{advancedTimeString}}
+            </div>
+            <div class="col-12">
+                <button class="btn-primary" @click="changeState()">
+                    <template v-if="state=='pause'">
+                        Старт
+                    </template>
+                    <template v-if="state=='play'">
+                        Пауза
+                    </template>
+                </button>
+            </div>
+            <div class="col-12">
+                <label>Change current time</label>
+                <div class="input-group">
+                    <input class="form-group" v-model="newTime">
+                    <button class="btn btn-primary" @click="updateTime()">Update</button>
                 </div>
             </div>
-            <div class="col-6">
-                <div>
-                    <button class="btn btn-primary w-100" @click="changeScore('away','add')">+</button>
-                </div>
-                <div class="text-center p-1" style="font-size: 36px;font-weight: bold">
-                    {{scoreAway}}
-                </div>
-                <div>
-                    <button class="btn btn-primary w-100" @click="changeScore('away','sub')">-</button>
-                </div>
-                <div>
-                    {{teamAway}}
+            <div class="col-12">
+                <label>Update advanced time value</label>
+                <div class="input-group">
+                    <input class="form-group" v-model="advancedSize">
+                    <button class="btn btn-primary" @click="updateAdvancedTime()">Update</button>
                 </div>
             </div>
         </div>
@@ -50,44 +52,55 @@
 
 <script>
     export default {
-        props: ['screen', 'widgetData'],
+        props: ['screen', 'widget'],
         data() {
             return {
+                timestamp: 0,
                 currentWidgetData: null,
                 state: 'play',
-                part: 1,
-                currentTime: {
-                    startPoint: null,
-                    minutes: 0,
-                    seconds: 0
+                part: {
+                    title: 1,
+                    maxValue: 100
                 },
-                advancedSize: '3',
-                advancedTime: {
-                    startPoint: null,
-                    minutes: 0,
-                    seconds: 0
+                advancedSize: null,
+                startPoint: null,
+                interval: null,
+                setting: {
+                    position: {
+                        top: 0,
+                        left: 0
+                    }
                 },
-                interval: null
+                newTime: null,
             }
         },
         computed: {
             currentTimeString() {
-                let minutes = this.currentTime.minutes;
+                let seconds = this.timestamp;
+                if(seconds >= this.part.maxValue) {
+                    seconds = this.part.maxValue;
+                }
+                let minutes = this.getFullMinutes(seconds);
+                seconds = seconds - (minutes*60);
                 if(minutes < 10) {
                     minutes = '0' + minutes.toString();
                 }
-                let seconds = this.currentTime.seconds;
                 if(seconds < 10) {
                     seconds = '0' + seconds.toString();
                 }
                 return minutes + ':' + seconds;
             },
             advancedTimeString() {
-                let minutes = this.advancedTime.minutes;
+                let seconds = this.timestamp;
+                if(seconds < this.part.maxValue) {
+                    return null;
+                }
+                seconds = seconds - this.part.maxValue;
+                let minutes = this.getFullMinutes(seconds);
+                seconds = seconds - (minutes*60);
                 if(minutes < 10) {
                     minutes = '0' + minutes.toString();
                 }
-                let seconds = this.advancedTime.seconds;
                 if(seconds < 10) {
                     seconds = '0' + seconds.toString();
                 }
@@ -95,45 +108,45 @@
             },
         },
         mounted() {
-            this.currentWidgetData = this.widgetData;
+            this.currentWidgetData = this.widget;
+            this.loadData();
             this.interval = setInterval(() => {
                 this.secondInterval();
             }, 1000);
         },
         created() {
-            var channel = PusherApp.subscribe('score-widget-' + this.screen.uuid);
-            channel.bind('StateChanged', this.changeState);
-            channel.bind('TimeChanged', this.changeTime);
+
         },
         methods: {
-            changeState(data) {
-                this.state = data.state;
+            updateTime() {},
+            updateAdvancedTime() {},
+            changeState() {
+
             },
-            changeTime(data) {
-                this.currentTime.minutes = data.minutes;
-                this.currentTime.seconds = data.seconds;
+            loadData() {
+                this.part = this.widget.data.part;
+                this.startPoint = this.widget.data.startPoint;
+                this.state = this.widget.data.state;
+                if(this.startPoint) {
+                    let date = new Date();
+                    let time = Math.floor(date.getTime()/1000);
+                    console.log(time, this.startPoint);
+                    this.timestamp = time - this.startPoint;
+                }
+                if(this.widget.data.advancedSize) {
+                    this.advancedSize = this.widget.data.advancedSize;
+                }
+                this.setting.position = this.widget.data.position;
             },
+            getFullMinutes(seconds){
+                return (seconds - seconds % 60) / 60;
+            },
+
             secondInterval() {
                 if(this.state == 'pause') {
                     return;
                 }
-                let minutes = this.currentTime.minutes;
-                if(minutes == 45 && this.part == 1) {
-
-                } else if (minutes == 90 && this.part == 2) {
-
-                } else {
-                    let seconds = this.currentTime.seconds + 1;
-                    if(seconds > 59) {
-                        minutes++;
-                        seconds = 0;
-                    }
-                    if(minutes > 45) {
-
-                    }
-                    this.currentTime.seconds = seconds;
-                    this.currentTime.minutes = minutes;
-                }
+                this.timestamp++;
             }
         }
     }

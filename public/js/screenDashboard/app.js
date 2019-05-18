@@ -1868,14 +1868,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   created: function created() {},
   mounted: function mounted() {
     this.refreshData();
+    this.isLoading = false;
   },
   props: ['screen', 'widget'],
   data: function data() {
     return {
+      isLoading: true,
       setting: {
         position: {
           top: 0,
@@ -1895,10 +1898,13 @@ __webpack_require__.r(__webpack_exports__);
     saveSetting: function saveSetting() {
       var _this = this;
 
+      this.isLoading = true;
       axios.post('/widget/score/' + this.widget.id + '/saveSetting', {
         setting: this.setting
       }).then(function (resp) {
         _this.refreshData();
+
+        _this.isLoading = false;
       });
     },
     refreshData: function refreshData() {
@@ -1908,14 +1914,18 @@ __webpack_require__.r(__webpack_exports__);
       this.scoreAway = this.widget.data.score.away;
       this.teamHomeColor = this.widget.data.color.home;
       this.teamAwayColor = this.widget.data.color.away;
+      this.setting.position = this.widget.data.position;
     },
     changeScore: function changeScore(team, type) {
       var _this2 = this;
 
+      this.isLoading = true;
       axios.get('/widget/score/' + this.widget.id + '/' + team + '/' + type).then(function (resp) {
         _this2.widget.data = resp.data.widgetData;
 
         _this2.refreshData();
+
+        _this2.isLoading = false;
       });
     }
   }
@@ -1948,36 +1958,54 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['screen', 'widgetData'],
+  props: ['screen', 'widget'],
   data: function data() {
     return {
+      timestamp: 0,
       currentWidgetData: null,
       state: 'play',
-      part: 1,
-      currentTime: {
-        startPoint: null,
-        minutes: 0,
-        seconds: 0
+      part: {
+        title: 1,
+        maxValue: 100
       },
-      advancedSize: '3',
-      advancedTime: {
-        startPoint: null,
-        minutes: 0,
-        seconds: 0
-      },
-      interval: null
+      advancedSize: null,
+      startPoint: null,
+      interval: null,
+      setting: {
+        position: {
+          top: 0,
+          left: 0
+        }
+      }
     };
   },
   computed: {
     currentTimeString: function currentTimeString() {
-      var minutes = this.currentTime.minutes;
+      var seconds = this.timestamp;
+
+      if (seconds >= this.part.maxValue) {
+        seconds = this.part.maxValue;
+      }
+
+      var minutes = this.getFullMinutes(seconds);
+      seconds = seconds - minutes * 60;
 
       if (minutes < 10) {
         minutes = '0' + minutes.toString();
       }
-
-      var seconds = this.currentTime.seconds;
 
       if (seconds < 10) {
         seconds = '0' + seconds.toString();
@@ -1986,13 +2014,19 @@ __webpack_require__.r(__webpack_exports__);
       return minutes + ':' + seconds;
     },
     advancedTimeString: function advancedTimeString() {
-      var minutes = this.advancedTime.minutes;
+      var seconds = this.timestamp;
+
+      if (seconds < this.part.maxValue) {
+        return null;
+      }
+
+      seconds = seconds - this.part.maxValue;
+      var minutes = this.getFullMinutes(seconds);
+      seconds = seconds - minutes * 60;
 
       if (minutes < 10) {
         minutes = '0' + minutes.toString();
       }
-
-      var seconds = this.advancedTime.seconds;
 
       if (seconds < 10) {
         seconds = '0' + seconds.toString();
@@ -2004,44 +2038,41 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this = this;
 
-    this.currentWidgetData = this.widgetData;
+    this.currentWidgetData = this.widget;
+    this.loadData();
     this.interval = setInterval(function () {
       _this.secondInterval();
     }, 1000);
   },
-  created: function created() {
-    var channel = PusherApp.subscribe('score-widget-' + this.screen.uuid);
-    channel.bind('StateChanged', this.changeState);
-    channel.bind('TimeChanged', this.changeTime);
-  },
+  created: function created() {},
   methods: {
-    changeState: function changeState(data) {
-      this.state = data.state;
+    loadData: function loadData() {
+      this.part = this.widget.data.part;
+      this.startPoint = this.widget.data.startPoint;
+      this.state = this.widget.data.state;
+
+      if (this.startPoint) {
+        var date = new Date();
+        var time = Math.floor(date.getTime() / 1000);
+        console.log(time, this.startPoint);
+        this.timestamp = time - this.startPoint;
+      }
+
+      if (this.widget.data.advancedSize) {
+        this.advancedSize = this.widget.data.advancedSize;
+      }
+
+      this.setting.position = this.widget.data.position;
     },
-    changeTime: function changeTime(data) {
-      this.currentTime.minutes = data.minutes;
-      this.currentTime.seconds = data.seconds;
+    getFullMinutes: function getFullMinutes(seconds) {
+      return (seconds - seconds % 60) / 60;
     },
     secondInterval: function secondInterval() {
       if (this.state == 'pause') {
         return;
       }
 
-      var minutes = this.currentTime.minutes;
-
-      if (minutes == 45 && this.part == 1) {} else if (minutes == 90 && this.part == 2) {} else {
-        var seconds = this.currentTime.seconds + 1;
-
-        if (seconds > 59) {
-          minutes++;
-          seconds = 0;
-        }
-
-        if (minutes > 45) {}
-
-        this.currentTime.seconds = seconds;
-        this.currentTime.minutes = minutes;
-      }
+      this.timestamp++;
     }
   }
 });
@@ -37404,104 +37435,228 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "b_widgetDashboardWrap b_dsw" }, [
-    _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-6" }, [
-        _c("div", [
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-primary w-100",
-              on: {
-                click: function($event) {
-                  return _vm.changeScore("home", "add")
+  return _c(
+    "div",
+    {
+      staticClass: "b_widgetDashboardWrap b_dsw",
+      class: { "is-loading": _vm.isLoading }
+    },
+    [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-6" }, [
+          _c("div", [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary w-100",
+                on: {
+                  click: function($event) {
+                    return _vm.changeScore("home", "add")
+                  }
                 }
-              }
-            },
-            [_vm._v("+")]
-          )
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "text-center p-1",
-            staticStyle: { "font-size": "36px", "font-weight": "bold" }
-          },
-          [
-            _vm._v(
-              "\n                " + _vm._s(_vm.scoreHome) + "\n            "
+              },
+              [_vm._v("+")]
             )
-          ]
-        ),
-        _vm._v(" "),
-        _c("div", [
+          ]),
+          _vm._v(" "),
           _c(
-            "button",
+            "div",
             {
-              staticClass: "btn btn-primary w-100",
-              on: {
-                click: function($event) {
-                  return _vm.changeScore("home", "sub")
-                }
-              }
+              staticClass: "text-center p-1",
+              staticStyle: { "font-size": "36px", "font-weight": "bold" }
             },
-            [_vm._v("-")]
-          )
+            [
+              _vm._v(
+                "\n                " + _vm._s(_vm.scoreHome) + "\n            "
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c("div", [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary w-100",
+                on: {
+                  click: function($event) {
+                    return _vm.changeScore("home", "sub")
+                  }
+                }
+              },
+              [_vm._v("-")]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", [
+            _vm._v(
+              "\n                " + _vm._s(_vm.teamHome) + "\n            "
+            )
+          ])
         ]),
         _vm._v(" "),
-        _c("div", [
-          _vm._v("\n                " + _vm._s(_vm.teamHome) + "\n            ")
+        _c("div", { staticClass: "col-6" }, [
+          _c("div", [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary w-100",
+                on: {
+                  click: function($event) {
+                    return _vm.changeScore("away", "add")
+                  }
+                }
+              },
+              [_vm._v("+")]
+            )
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "text-center p-1",
+              staticStyle: { "font-size": "36px", "font-weight": "bold" }
+            },
+            [
+              _vm._v(
+                "\n                " + _vm._s(_vm.scoreAway) + "\n            "
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c("div", [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary w-100",
+                on: {
+                  click: function($event) {
+                    return _vm.changeScore("away", "sub")
+                  }
+                }
+              },
+              [_vm._v("-")]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", [
+            _vm._v(
+              "\n                " + _vm._s(_vm.teamAway) + "\n            "
+            )
+          ])
         ])
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "col-6" }, [
-        _c("div", [
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-primary w-100",
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-12" }, [
+          _c("div", { staticClass: "form-group" }, [
+            _c("label", [_vm._v("Position Top")]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.setting.position.top,
+                  expression: "setting.position.top"
+                }
+              ],
+              staticClass: "form-control",
+              domProps: { value: _vm.setting.position.top },
               on: {
-                click: function($event) {
-                  return _vm.changeScore("away", "add")
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.setting.position, "top", $event.target.value)
                 }
               }
-            },
-            [_vm._v("+")]
-          )
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "text-center p-1",
-            staticStyle: { "font-size": "36px", "font-weight": "bold" }
-          },
-          [
-            _vm._v(
-              "\n                " + _vm._s(_vm.scoreAway) + "\n            "
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-group" }, [
+            _c("label", [_vm._v("Position Left")]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.setting.position.left,
+                  expression: "setting.position.left"
+                }
+              ],
+              staticClass: "form-control",
+              domProps: { value: _vm.setting.position.left },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.setting.position, "left", $event.target.value)
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                on: {
+                  click: function($event) {
+                    return _vm.saveSetting()
+                  }
+                }
+              },
+              [_vm._v("Save setting")]
             )
-          ]
-        ),
-        _vm._v(" "),
-        _c("div", [
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-primary w-100",
-              on: {
-                click: function($event) {
-                  return _vm.changeScore("away", "sub")
-                }
-              }
-            },
-            [_vm._v("-")]
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", [
-          _vm._v("\n                " + _vm._s(_vm.teamAway) + "\n            ")
+          ])
         ])
+      ]),
+      _vm._v(" "),
+      _vm.isLoading ? _c("div", { staticClass: "curtain" }) : _vm._e()
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/screen-dashboard/components/Widgets/TimerWidget.vue?vue&type=template&id=205a46de&":
+/*!***************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/screen-dashboard/components/Widgets/TimerWidget.vue?vue&type=template&id=205a46de& ***!
+  \***************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "b_widgetDashboardWrap b_dtw" }, [
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-12" }, [
+        _vm._v(
+          "\n            Время: " + _vm._s(_vm.currentTimeString) + "\n        "
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", [
+        _vm._v(
+          "\n            Дополнительное время(+" +
+            _vm._s(_vm.advancedSize) +
+            "): " +
+            _vm._s(_vm.advancedTimeString) +
+            "\n        "
+        )
       ])
     ]),
     _vm._v(" "),
@@ -37574,55 +37729,6 @@ var render = function() {
       ])
     ])
   ])
-}
-var staticRenderFns = []
-render._withStripped = true
-
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/screen-dashboard/components/Widgets/TimerWidget.vue?vue&type=template&id=205a46de&":
-/*!***************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/screen-dashboard/components/Widgets/TimerWidget.vue?vue&type=template&id=205a46de& ***!
-  \***************************************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "b_widgetWrap b_tw" },
-    [
-      _c("div", { staticClass: "b_tw_time" }, [
-        _vm._v("\n        " + _vm._s(_vm.currentTimeString) + "\n    ")
-      ]),
-      _vm._v(" "),
-      _vm.advancedSize
-        ? [
-            _c("div", { staticClass: "b_tw_adv_size" }, [
-              _vm._v(
-                "\n            + " + _vm._s(_vm.advancedSize) + "\n        "
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "b_tw_adv_time" }, [
-              _vm._v(
-                "\n            " + _vm._s(_vm.advancedTimeString) + "\n        "
-              )
-            ])
-          ]
-        : _vm._e()
-    ],
-    2
-  )
 }
 var staticRenderFns = []
 render._withStripped = true

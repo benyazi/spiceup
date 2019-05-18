@@ -1923,32 +1923,32 @@ __webpack_require__.r(__webpack_exports__);
   props: ['screen', 'widget'],
   data: function data() {
     return {
+      timestamp: 0,
       currentWidgetData: null,
       state: 'play',
-      part: 1,
-      currentTime: {
-        startPoint: null,
-        minutes: 0,
-        seconds: 0
+      part: {
+        title: 1,
+        maxValue: 100
       },
-      advancedSize: '3',
-      advancedTime: {
-        startPoint: null,
-        minutes: 0,
-        seconds: 0
-      },
+      advancedSize: null,
+      startPoint: null,
       interval: null
     };
   },
   computed: {
     currentTimeString: function currentTimeString() {
-      var minutes = this.currentTime.minutes;
+      var seconds = this.timestamp;
+
+      if (seconds >= this.part.maxValue) {
+        seconds = this.part.maxValue;
+      }
+
+      var minutes = this.getFullMinutes(seconds);
+      seconds = seconds - minutes * 60;
 
       if (minutes < 10) {
         minutes = '0' + minutes.toString();
       }
-
-      var seconds = this.currentTime.seconds;
 
       if (seconds < 10) {
         seconds = '0' + seconds.toString();
@@ -1957,13 +1957,19 @@ __webpack_require__.r(__webpack_exports__);
       return minutes + ':' + seconds;
     },
     advancedTimeString: function advancedTimeString() {
-      var minutes = this.advancedTime.minutes;
+      var seconds = this.timestamp;
+
+      if (seconds < this.part.maxValue) {
+        return null;
+      }
+
+      seconds = seconds - this.part.maxValue;
+      var minutes = this.getFullMinutes(seconds);
+      seconds = seconds - minutes * 60;
 
       if (minutes < 10) {
         minutes = '0' + minutes.toString();
       }
-
-      var seconds = this.advancedTime.seconds;
 
       if (seconds < 10) {
         seconds = '0' + seconds.toString();
@@ -1990,6 +1996,7 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     this.currentWidgetData = this.widget;
+    this.loadData();
     this.interval = setInterval(function () {
       _this.secondInterval();
     }, 1000);
@@ -1998,35 +2005,44 @@ __webpack_require__.r(__webpack_exports__);
     var channel = PusherApp.subscribe('score-widget-' + this.screen.uuid);
     channel.bind('StateChanged', this.changeState);
     channel.bind('TimeChanged', this.changeTime);
+    channel.bind('AdvancedSizeChanged', this.changeAdvancedSize);
   },
   methods: {
+    getFullMinutes: function getFullMinutes(seconds) {
+      return (seconds - seconds % 60) / 60;
+    },
+    loadData: function loadData() {
+      this.part = this.widget.data.part;
+      this.startPoint = this.widget.data.startPoint;
+      this.state = this.widget.data.state;
+
+      if (this.startPoint) {
+        var date = new Date();
+        var time = Math.floor(date.getTime() / 1000);
+        console.log(time, this.startPoint);
+        this.timestamp = time - this.startPoint;
+      }
+
+      if (this.widget.data.advancedSize) {
+        this.advancedSize = this.widget.data.advancedSize;
+      }
+    },
     changeState: function changeState(data) {
+      this.timestamp = data.timestamp;
       this.state = data.state;
     },
     changeTime: function changeTime(data) {
-      this.currentTime.minutes = data.minutes;
-      this.currentTime.seconds = data.seconds;
+      this.timestamp = data.timestamp;
+    },
+    changeAdvancedSize: function changeAdvancedSize(data) {
+      this.advancedSize = data.advancedSize;
     },
     secondInterval: function secondInterval() {
       if (this.state == 'pause') {
         return;
       }
 
-      var minutes = this.currentTime.minutes;
-
-      if (minutes == 45 && this.part == 1) {} else if (minutes == 90 && this.part == 2) {} else {
-        var seconds = this.currentTime.seconds + 1;
-
-        if (seconds > 59) {
-          minutes++;
-          seconds = 0;
-        }
-
-        if (minutes > 45) {}
-
-        this.currentTime.seconds = seconds;
-        this.currentTime.minutes = minutes;
-      }
+      this.timestamp++;
     }
   }
 });
@@ -46346,7 +46362,7 @@ var render = function() {
         _vm._v("\n        " + _vm._s(_vm.currentTimeString) + "\n    ")
       ]),
       _vm._v(" "),
-      _vm.advancedSize
+      _vm.advancedSize || _vm.timestamp > _vm.part.maxValue
         ? [
             _c("div", { staticClass: "b_tw_adv_size" }, [
               _vm._v(
@@ -46354,11 +46370,15 @@ var render = function() {
               )
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "b_tw_adv_time" }, [
-              _vm._v(
-                "\n            " + _vm._s(_vm.advancedTimeString) + "\n        "
-              )
-            ])
+            _vm.timestamp > _vm.part.maxValue
+              ? _c("div", { staticClass: "b_tw_adv_time" }, [
+                  _vm._v(
+                    "\n            " +
+                      _vm._s(_vm.advancedTimeString) +
+                      "\n        "
+                  )
+                ])
+              : _vm._e()
           ]
         : _vm._e()
     ],

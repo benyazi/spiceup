@@ -1,5 +1,5 @@
 <template>
-    <div class="b_widgetDashboardWrap b_dsw">
+    <div class="b_widgetDashboardWrap b_dsw" :class="{'is-loading':isLoading}">
         <div class="row">
             <div class="col-6">
                 <div>
@@ -45,6 +45,7 @@
                 </div>
             </div>
         </div>
+        <div class="curtain" v-if="isLoading"></div>
     </div>
 </template>
 
@@ -55,10 +56,12 @@
         },
         mounted() {
             this.refreshData();
+            this.isLoading = false;
         },
         props: ['screen','widget'],
         data() {
             return {
+                isLoading: true,
                 setting: {
                     position: {
                         top: 0,
@@ -76,9 +79,10 @@
         },
         methods: {
             saveSetting() {
+                this.isLoading = true;
                 axios.post('/widget/score/'+this.widget.id+'/saveSetting', {setting: this.setting}).then((resp) => {
-
                     this.refreshData();
+                    this.isLoading = false;
                 });
             },
             refreshData() {
@@ -88,11 +92,15 @@
                 this.scoreAway = this.widget.data.score.away;
                 this.teamHomeColor = this.widget.data.color.home;
                 this.teamAwayColor = this.widget.data.color.away;
+
+                this.setting.position = this.widget.data.position;
             },
             changeScore(team, type) {
+                this.isLoading = true;
                 axios.get('/widget/score/'+this.widget.id+'/'+team+'/'+type).then((resp) => {
                     this.widget.data = resp.data.widgetData;
                     this.refreshData();
+                    this.isLoading = false;
                 });
             }
         }

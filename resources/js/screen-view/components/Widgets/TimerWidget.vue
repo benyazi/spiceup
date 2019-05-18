@@ -3,11 +3,11 @@
         <div class="b_tw_time">
             {{currentTimeString}}
         </div>
-        <template v-if="advancedSize">
+        <template v-if="advancedSize || (timestamp > part.maxValue)">
             <div class="b_tw_adv_size">
                 + {{advancedSize}}
             </div>
-            <div class="b_tw_adv_time">
+            <div class="b_tw_adv_time" v-if="(timestamp > part.maxValue)">
                 {{advancedTimeString}}
             </div>
         </template>
@@ -19,41 +19,45 @@
         props: ['screen', 'widget'],
         data() {
             return {
+                timestamp: 0,
                 currentWidgetData: null,
                 state: 'play',
-                part: 1,
-                currentTime: {
-                    startPoint: null,
-                    minutes: 0,
-                    seconds: 0
+                part: {
+                    title: 1,
+                    maxValue: 100
                 },
-                advancedSize: '3',
-                advancedTime: {
-                    startPoint: null,
-                    minutes: 0,
-                    seconds: 0
-                },
+                advancedSize: null,
+                startPoint: null,
                 interval: null
             }
         },
         computed: {
             currentTimeString() {
-                let minutes = this.currentTime.minutes;
+                let seconds = this.timestamp;
+                if(seconds >= this.part.maxValue) {
+                    seconds = this.part.maxValue;
+                }
+                let minutes = this.getFullMinutes(seconds);
+                seconds = seconds - (minutes*60);
                 if(minutes < 10) {
                     minutes = '0' + minutes.toString();
                 }
-                let seconds = this.currentTime.seconds;
                 if(seconds < 10) {
                     seconds = '0' + seconds.toString();
                 }
                 return minutes + ':' + seconds;
             },
             advancedTimeString() {
-                let minutes = this.advancedTime.minutes;
+                let seconds = this.timestamp;
+                if(seconds < this.part.maxValue) {
+                    return null;
+                }
+                seconds = seconds - this.part.maxValue;
+                let minutes = this.getFullMinutes(seconds);
+                seconds = seconds - (minutes*60);
                 if(minutes < 10) {
                     minutes = '0' + minutes.toString();
                 }
-                let seconds = this.advancedTime.seconds;
                 if(seconds < 10) {
                     seconds = '0' + seconds.toString();
                 }
@@ -74,6 +78,7 @@
         },
         mounted() {
             this.currentWidgetData = this.widget;
+            this.loadData();
             this.interval = setInterval(() => {
                 this.secondInterval();
             }, 1000);
@@ -82,36 +87,41 @@
             var channel = PusherApp.subscribe('score-widget-' + this.screen.uuid);
             channel.bind('StateChanged', this.changeState);
             channel.bind('TimeChanged', this.changeTime);
+            channel.bind('AdvancedSizeChanged', this.changeAdvancedSize);
         },
         methods: {
+            getFullMinutes(seconds){
+                return (seconds - seconds % 60) / 60;
+            },
+            loadData() {
+                this.part = this.widget.data.part;
+                this.startPoint = this.widget.data.startPoint;
+                this.state = this.widget.data.state;
+                if(this.startPoint) {
+                    let date = new Date();
+                    let time = Math.floor(date.getTime()/1000);
+                    console.log(time, this.startPoint);
+                    this.timestamp = time - this.startPoint;
+                }
+                if(this.widget.data.advancedSize) {
+                    this.advancedSize = this.widget.data.advancedSize;
+                }
+            },
             changeState(data) {
+                this.timestamp = data.timestamp;
                 this.state = data.state;
             },
             changeTime(data) {
-                this.currentTime.minutes = data.minutes;
-                this.currentTime.seconds = data.seconds;
+                this.timestamp = data.timestamp;
+            },
+            changeAdvancedSize(data) {
+                this.advancedSize = data.advancedSize;
             },
             secondInterval() {
                 if(this.state == 'pause') {
                     return;
                 }
-                let minutes = this.currentTime.minutes;
-                if(minutes == 45 && this.part == 1) {
-
-                } else if (minutes == 90 && this.part == 2) {
-
-                } else {
-                    let seconds = this.currentTime.seconds + 1;
-                    if(seconds > 59) {
-                        minutes++;
-                        seconds = 0;
-                    }
-                    if(minutes > 45) {
-
-                    }
-                    this.currentTime.seconds = seconds;
-                    this.currentTime.minutes = minutes;
-                }
+                this.timestamp++;
             }
         }
     }

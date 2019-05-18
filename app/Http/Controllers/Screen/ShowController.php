@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Scene;
 use App\Models\SceneWidget;
 use App\Models\Screen;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ShowController extends Controller
@@ -48,10 +49,30 @@ class ShowController extends Controller
             ->get();
         $widgetArray = [];
         foreach ($widgets as $widget) {
+            $widgetData = $widget->data;
+            if(empty($widgetData) && $widget->widget_type == 'timer') {
+                $startPoint = 1558175864;
+                $currentTimestamp = Carbon::now()->timestamp;
+                $widgetData = [
+                    'startPoint' => $startPoint,
+                    'timestamp' => ($currentTimestamp - $startPoint),
+                    'state' => 'play',
+                    'advancedSize' => 3,
+                    'part' => [
+                        'maxValue' => 200
+                    ],
+                    'position'=> [
+                        'top' => 20,
+                        'left' => 300
+                    ]
+                ];
+                $widget->data = $widgetData;
+                $widget->save();
+            }
             $widgetArray[$widget->id] = [
                 'id' => $widget->id,
-                'widgetData' => $widget->data,
-                'data' => $widget->data,
+                'widgetData' => $widgetData,
+                'data' => $widgetData,
                 'type' => $widget->widget_type
             ];
         }
