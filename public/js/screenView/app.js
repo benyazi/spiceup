@@ -1841,6 +1841,7 @@ __webpack_require__.r(__webpack_exports__);
     var channel = PusherApp.subscribe('score-widget-' + this.screen.uuid);
     channel.bind('ScoreChanged', this.changeScore);
     channel.bind('ScorePositionChanged', this.changePositionScore);
+    channel.bind('UpdateTeamData', this.updateTeamData);
   },
   computed: {
     positionTop: function positionTop() {
@@ -1879,6 +1880,17 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
+    updateTeamData: function updateTeamData(data) {
+      if (data.data.team) {
+        this.teamHome = data.data.team.home;
+        this.teamAway = data.data.team.away;
+      }
+
+      if (data.data.color) {
+        this.teamHomeColor = data.data.color.home;
+        this.teamAwayColor = data.data.color.away;
+      }
+    },
     changeScore: function changeScore(data) {
       if (data.team == 'home') {
         this.scoreHome = data.score;
@@ -2003,9 +2015,10 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     var channel = PusherApp.subscribe('score-widget-' + this.screen.uuid);
-    channel.bind('StateChanged', this.changeState);
-    channel.bind('TimeChanged', this.changeTime);
+    channel.bind('TimerStateChanged', this.changeState);
+    channel.bind('TimerChangedTime', this.changeTime);
     channel.bind('AdvancedSizeChanged', this.changeAdvancedSize);
+    channel.bind('WidgetPositionChanged', this.changePositionScore);
   },
   methods: {
     getFullMinutes: function getFullMinutes(seconds) {
@@ -2028,13 +2041,25 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     changeState: function changeState(data) {
-      this.timestamp = data.timestamp;
+      if (data.timestamp !== undefined) {
+        this.timestamp = data.timestamp;
+      }
+
       this.state = data.state;
     },
     changeTime: function changeTime(data) {
+      if (data.widget_id != this.widget.id) {
+        return;
+      }
+
+      this.startPoint = data.startPoint;
       this.timestamp = data.timestamp;
     },
     changeAdvancedSize: function changeAdvancedSize(data) {
+      if (data.widget_id != this.widget.id) {
+        return;
+      }
+
       this.advancedSize = data.advancedSize;
     },
     secondInterval: function secondInterval() {
@@ -2043,6 +2068,11 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       this.timestamp++;
+    },
+    changePositionScore: function changePositionScore(data) {
+      if (data.widget_id == this.widget.id) {
+        this.widget.data.position = data.position;
+      }
     }
   }
 });

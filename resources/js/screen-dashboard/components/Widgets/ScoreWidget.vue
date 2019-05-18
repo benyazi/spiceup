@@ -32,13 +32,47 @@
         </div>
         <div class="row">
             <div class="col-12">
-                <div class="form-group">
-                    <label>Position Top</label>
-                    <input class="form-control" v-model="setting.position.top">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Team Home name</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="DIN" v-model="teamHome">
                 </div>
-                <div class="form-group">
-                    <label>Position Left</label>
-                    <input class="form-control" v-model="setting.position.left">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Team Away name</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="DIN" v-model="teamAway">
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Team Home color</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="red or #FFFFFF" v-model="teamHomeColor">
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Team Away color</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="red or #FFFFFF" v-model="teamAwayColor">
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Position Top</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="20" v-model="setting.position.top">
+                    <div class="input-group-append">
+                        <span class="input-group-text">px</span>
+                    </div>
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Position Left</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="20" v-model="setting.position.left">
+                    <div class="input-group-append">
+                        <span class="input-group-text">px</span>
+                    </div>
                 </div>
                 <div>
                     <button class="btn btn-primary" @click="saveSetting()">Save setting</button>
@@ -80,7 +114,18 @@
         methods: {
             saveSetting() {
                 this.isLoading = true;
-                axios.post('/widget/score/'+this.widget.id+'/saveSetting', {setting: this.setting}).then((resp) => {
+                let setting = this.setting;
+                setting.teams = {
+                    team: {
+                        home: this.teamHome,
+                        away: this.teamAway,
+                    },
+                    color: {
+                        home: this.teamHomeColor,
+                        away: this.teamAwayColor,
+                    }
+                };
+                axios.post('/widget/score/'+this.widget.id+'/saveSetting', {setting: setting}).then((resp) => {
                     this.refreshData();
                     this.isLoading = false;
                 });

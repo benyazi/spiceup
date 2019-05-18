@@ -28,6 +28,7 @@
             var channel = PusherApp.subscribe('score-widget-' + this.screen.uuid);
             channel.bind('ScoreChanged', this.changeScore);
             channel.bind('ScorePositionChanged', this.changePositionScore);
+            channel.bind('UpdateTeamData', this.updateTeamData);
         },
         computed: {
             positionTop() {
@@ -64,6 +65,16 @@
             }
         },
         methods: {
+            updateTeamData(data) {
+                if(data.data.team) {
+                    this.teamHome = data.data.team.home;
+                    this.teamAway = data.data.team.away;
+                }
+                if(data.data.color) {
+                    this.teamHomeColor = data.data.color.home;
+                    this.teamAwayColor = data.data.color.away;
+                }
+            },
             changeScore(data) {
                 if(data.team == 'home') {
                     this.scoreHome = data.score;

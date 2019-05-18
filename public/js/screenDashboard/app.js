@@ -1869,6 +1869,40 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   created: function created() {},
   mounted: function mounted() {
@@ -1899,8 +1933,19 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.isLoading = true;
+      var setting = this.setting;
+      setting.teams = {
+        team: {
+          home: this.teamHome,
+          away: this.teamAway
+        },
+        color: {
+          home: this.teamHomeColor,
+          away: this.teamAwayColor
+        }
+      };
       axios.post('/widget/score/' + this.widget.id + '/saveSetting', {
-        setting: this.setting
+        setting: setting
       }).then(function (resp) {
         _this.refreshData();
 
@@ -1970,10 +2015,44 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['screen', 'widget'],
   data: function data() {
     return {
+      isLoading: false,
       timestamp: 0,
       currentWidgetData: null,
       state: 'play',
@@ -1989,7 +2068,8 @@ __webpack_require__.r(__webpack_exports__);
           top: 0,
           left: 0
         }
-      }
+      },
+      newTime: null
     };
   },
   computed: {
@@ -2046,6 +2126,49 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {},
   methods: {
+    updateTime: function updateTime() {
+      var _this2 = this;
+
+      var timeData = this.newTime.split(':');
+      var seconds = parseInt(timeData[0] * 60) + parseInt(timeData[1]);
+      var url = '/widget/timer/time/' + this.widget.id + '/' + seconds;
+      this.isLoading = true;
+      axios.get(url).then(function (resp) {
+        _this2.timestamp = resp.data.timestamp;
+        _this2.startPoint = resp.data.startPoint;
+        _this2.isLoading = false;
+      });
+    },
+    saveSetting: function saveSetting() {
+      var _this3 = this;
+
+      this.isLoading = true;
+      axios.post('/widget/timer/' + this.widget.id + '/saveSetting', {
+        setting: this.setting
+      }).then(function (resp) {
+        _this3.isLoading = false;
+      });
+    },
+    updateAdvancedTime: function updateAdvancedTime() {
+      var _this4 = this;
+
+      var url = '/widget/timer/advanced_size/' + this.widget.id + '/' + this.advancedSize;
+      this.isLoading = true;
+      axios.get(url).then(function (resp) {
+        _this4.isLoading = false;
+      });
+    },
+    changeState: function changeState() {
+      var _this5 = this;
+
+      var newState = this.state === 'pause' ? 'play' : 'pause';
+      var url = '/widget/timer/state/' + this.widget.id + '/' + newState;
+      this.isLoading = true;
+      axios.get(url).then(function (resp) {
+        _this5.state = resp.data.state;
+        _this5.isLoading = false;
+      });
+    },
     loadData: function loadData() {
       this.part = this.widget.data.part;
       this.startPoint = this.widget.data.startPoint;
@@ -37548,8 +37671,112 @@ var render = function() {
       _vm._v(" "),
       _c("div", { staticClass: "row" }, [
         _c("div", { staticClass: "col-12" }, [
-          _c("div", { staticClass: "form-group" }, [
-            _c("label", [_vm._v("Position Top")]),
+          _c("div", { staticClass: "input-group mb-1" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.teamHome,
+                  expression: "teamHome"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "text", placeholder: "DIN" },
+              domProps: { value: _vm.teamHome },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.teamHome = $event.target.value
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group mb-1" }, [
+            _vm._m(1),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.teamAway,
+                  expression: "teamAway"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "text", placeholder: "DIN" },
+              domProps: { value: _vm.teamAway },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.teamAway = $event.target.value
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group mb-1" }, [
+            _vm._m(2),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.teamHomeColor,
+                  expression: "teamHomeColor"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "text", placeholder: "red or #FFFFFF" },
+              domProps: { value: _vm.teamHomeColor },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.teamHomeColor = $event.target.value
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group mb-1" }, [
+            _vm._m(3),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.teamAwayColor,
+                  expression: "teamAwayColor"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "text", placeholder: "red or #FFFFFF" },
+              domProps: { value: _vm.teamAwayColor },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.teamAwayColor = $event.target.value
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group mb-1" }, [
+            _vm._m(4),
             _vm._v(" "),
             _c("input", {
               directives: [
@@ -37561,6 +37788,7 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
+              attrs: { type: "text", placeholder: "20" },
               domProps: { value: _vm.setting.position.top },
               on: {
                 input: function($event) {
@@ -37570,11 +37798,13 @@ var render = function() {
                   _vm.$set(_vm.setting.position, "top", $event.target.value)
                 }
               }
-            })
+            }),
+            _vm._v(" "),
+            _vm._m(5)
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "form-group" }, [
-            _c("label", [_vm._v("Position Left")]),
+          _c("div", { staticClass: "input-group mb-1" }, [
+            _vm._m(6),
             _vm._v(" "),
             _c("input", {
               directives: [
@@ -37586,6 +37816,7 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
+              attrs: { type: "text", placeholder: "20" },
               domProps: { value: _vm.setting.position.left },
               on: {
                 input: function($event) {
@@ -37595,7 +37826,9 @@ var render = function() {
                   _vm.$set(_vm.setting.position, "left", $event.target.value)
                 }
               }
-            })
+            }),
+            _vm._v(" "),
+            _vm._m(7)
           ]),
           _vm._v(" "),
           _c("div", [
@@ -37619,7 +37852,80 @@ var render = function() {
     ]
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [
+        _vm._v("Team Home name")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [
+        _vm._v("Team Away name")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [
+        _vm._v("Team Home color")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [
+        _vm._v("Team Away color")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("Position Top")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-append" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("px")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("Position Left")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-append" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("px")])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -37643,13 +37949,13 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "b_widgetDashboardWrap b_dtw" }, [
     _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-12" }, [
+      _c("div", { staticClass: "col-12 mb-1" }, [
         _vm._v(
           "\n            Время: " + _vm._s(_vm.currentTimeString) + "\n        "
         )
       ]),
       _vm._v(" "),
-      _c("div", [
+      _c("div", { staticClass: "col-12 mb-1" }, [
         _vm._v(
           "\n            Дополнительное время(+" +
             _vm._s(_vm.advancedSize) +
@@ -37657,6 +37963,118 @@ var render = function() {
             _vm._s(_vm.advancedTimeString) +
             "\n        "
         )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-12 mb-1" }, [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-primary",
+            on: {
+              click: function($event) {
+                return _vm.changeState()
+              }
+            }
+          },
+          [
+            _vm.state == "pause"
+              ? [_vm._v("\n                    Старт\n                ")]
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.state == "play"
+              ? [_vm._v("\n                    Пауза\n                ")]
+              : _vm._e()
+          ],
+          2
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-12 mb-1" }, [
+        _c("div", { staticClass: "input-group" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.newTime,
+                expression: "newTime"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { type: "text", placeholder: "10:43" },
+            domProps: { value: _vm.newTime },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.newTime = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group-append" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-secondary",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.updateTime()
+                  }
+                }
+              },
+              [_vm._v("Update")]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-12 mb-1" }, [
+        _c("div", { staticClass: "input-group" }, [
+          _vm._m(1),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.advancedSize,
+                expression: "advancedSize"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { type: "text", placeholder: "5" },
+            domProps: { value: _vm.advancedSize },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.advancedSize = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group-append" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-secondary",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.updateAdvancedTime()
+                  }
+                }
+              },
+              [_vm._v("Update")]
+            )
+          ])
+        ])
       ])
     ]),
     _vm._v(" "),
@@ -37727,10 +38145,33 @@ var render = function() {
           )
         ])
       ])
-    ])
+    ]),
+    _vm._v(" "),
+    _vm.isLoading ? _c("div", { staticClass: "curtain" }) : _vm._e()
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [
+        _vm._v("Change current time")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [
+        _vm._v("Change advanced time value")
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 

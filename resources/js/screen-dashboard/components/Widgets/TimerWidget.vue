@@ -1,14 +1,14 @@
 <template>
     <div class="b_widgetDashboardWrap b_dtw">
         <div class="row">
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 Время: {{currentTimeString}}
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 Дополнительное время(+{{advancedSize}}): {{advancedTimeString}}
             </div>
-            <div class="col-12">
-                <button class="btn-primary" @click="changeState()">
+            <div class="col-12 mb-1">
+                <button class="btn btn-primary" @click="changeState()">
                     <template v-if="state=='pause'">
                         Старт
                     </template>
@@ -17,18 +17,26 @@
                     </template>
                 </button>
             </div>
-            <div class="col-12">
-                <label>Change current time</label>
+            <div class="col-12 mb-1">
                 <div class="input-group">
-                    <input class="form-group" v-model="newTime">
-                    <button class="btn btn-primary" @click="updateTime()">Update</button>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Change current time</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="10:43" v-model="newTime">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" @click="updateTime()">Update</button>
+                    </div>
                 </div>
             </div>
-            <div class="col-12">
-                <label>Update advanced time value</label>
+            <div class="col-12 mb-1">
                 <div class="input-group">
-                    <input class="form-group" v-model="advancedSize">
-                    <button class="btn btn-primary" @click="updateAdvancedTime()">Update</button>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Change advanced time value</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="5" v-model="advancedSize">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" @click="updateAdvancedTime()">Update</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -47,6 +55,7 @@
                 </div>
             </div>
         </div>
+        <div class="curtain" v-if="isLoading"></div>
     </div>
 </template>
 
@@ -55,6 +64,7 @@
         props: ['screen', 'widget'],
         data() {
             return {
+                isLoading: false,
                 timestamp: 0,
                 currentWidgetData: null,
                 state: 'play',
@@ -118,12 +128,33 @@
 
         },
         methods: {
-            updateTime() {},
-            saveSetting() {},
-            updateAdvancedTime() {},
+            updateTime() {
+                let timeData = this.newTime.split(':');
+                let seconds = parseInt(timeData[0]*60) + parseInt(timeData[1]);
+                let url = '/widget/timer/time/'+this.widget.id+'/'+seconds;
+                this.isLoading = true;
+                axios.get(url).then((resp) => {
+                    this.timestamp = resp.data.timestamp;
+                    this.startPoint = resp.data.startPoint;
+                    this.isLoading = false;
+                });
+            },
+            saveSetting() {
+                this.isLoading = true;
+                axios.post('/widget/timer/'+this.widget.id+'/saveSetting', {setting: this.setting}).then((resp) => {
+                    this.isLoading = false;
+                });
+            },
+            updateAdvancedTime() {
+                let url = '/widget/timer/advanced_size/'+this.widget.id+'/'+this.advancedSize;
+                this.isLoading = true;
+                axios.get(url).then((resp) => {
+                    this.isLoading = false;
+                });
+            },
             changeState() {
                 let newState = (this.state === 'pause')?'play':'pause';
-                let url = '/widget/timer/'+this.widget.id+'/'+newState;
+                let url = '/widget/timer/state/'+this.widget.id+'/'+newState;
                 this.isLoading = true;
                 axios.get(url).then((resp) => {
                     this.state = resp.data.state;

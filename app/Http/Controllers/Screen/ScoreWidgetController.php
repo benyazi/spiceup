@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Screen;
 
+use App\Events\ScoreWidget\CustomWidgetEventEvent;
 use App\Events\ScoreWidget\ScoreChangedEvent;
 use App\Events\ScoreWidget\ScorePositionChangedEvent;
 use App\Http\Controllers\Controller;
@@ -58,11 +59,18 @@ class ScoreWidgetController extends Controller
             'top' => $setting['position']['top'],
             'left' => $setting['position']['left'],
         ];
+        if(isset($setting['teams'])) {
+            $widgetData['team'] = $setting['teams']['team'];
+            $widgetData['color'] = $setting['teams']['color'];
+        }
         $widget->data = $widgetData;
         $widget->save();
         $screen = $widget->scene->screen;
         event(new ScorePositionChangedEvent($screen->uuid, [
             'position' => $widgetData['position']
+        ]));
+        event(new CustomWidgetEventEvent($screen->uuid, 'UpdateTeamData', [
+            'data' => $widgetData
         ]));
         return [
             'success' => true,

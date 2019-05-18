@@ -86,7 +86,7 @@
         created() {
             var channel = PusherApp.subscribe('score-widget-' + this.screen.uuid);
             channel.bind('TimerStateChanged', this.changeState);
-            channel.bind('TimeChanged', this.changeTime);
+            channel.bind('TimerChangedTime', this.changeTime);
             channel.bind('AdvancedSizeChanged', this.changeAdvancedSize);
             channel.bind('WidgetPositionChanged', this.changePositionScore);
         },
@@ -115,9 +115,16 @@
                 this.state = data.state;
             },
             changeTime(data) {
+                if(data.widget_id != this.widget.id) {
+                    return;
+                }
+                this.startPoint = data.startPoint;
                 this.timestamp = data.timestamp;
             },
             changeAdvancedSize(data) {
+                if(data.widget_id != this.widget.id) {
+                    return;
+                }
                 this.advancedSize = data.advancedSize;
             },
             secondInterval() {
