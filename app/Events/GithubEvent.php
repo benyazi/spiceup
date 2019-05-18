@@ -1,5 +1,5 @@
 <?php
-namespace App\Events\ScoreWidget;
+namespace App\Events;
 
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;

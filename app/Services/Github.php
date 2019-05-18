@@ -2,7 +2,7 @@
 namespace App\Services;
 
 use App\Events\ScoreWidget\CustomWidgetEventEvent;
-use App\Events\ScoreWidget\GithubEvent;
+use App\Events\GithubEvent;
 use App\Models\Github\Events;
 use App\Models\Github\Push;
 
