@@ -30,7 +30,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row mb-1">
             <div class="col-12">
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -81,7 +81,7 @@
         </div>
         <div class="row">
             <div class="col-12">
-                <button class="btn btn-primary" @click="activate">
+                <button class="btn btn-primary w-100" @click="activate" :class="{'btn-primary':!widget.is_active,'btn-danger':widget.is_active}">
                     <template v-if="widget.is_active">
                         Отключить
                     </template>
