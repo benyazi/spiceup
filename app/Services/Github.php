@@ -41,6 +41,7 @@ class Github
         $push->pusher = $pusher;
         $push->sender = $sender;
         $push->commit_count = $commits;
+        //save
         $push->save();
         event(new GithubEvent('NewPush', [
             'pushItem' => $push->toArray()
