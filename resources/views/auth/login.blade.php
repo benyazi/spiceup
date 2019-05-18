@@ -1,4 +1,10 @@
 @extends('layouts.app')
+@push('scripts')
+    <script src="{{ asset('js/app.js') }}" defer></script>
+@endpush
+@push('styles')
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+@endpush
 
 @section('content')
 <div class="container">
