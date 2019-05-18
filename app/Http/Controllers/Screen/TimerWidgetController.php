@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Screen;
 
 use App\Events\ScoreWidget\ScoreChangedEvent;
 use App\Events\ScoreWidget\ScorePositionChangedEvent;
+use App\Events\ScoreWidget\TimerStateChangedEvent;
+use App\Events\ScoreWidget\WidgetPositionChangedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Scene;
 use App\Models\SceneWidget;
@@ -34,13 +36,16 @@ class TimerWidgetController extends Controller
         $widget->data = $widgetData;
         $widget->save();
         $screen = $widget->scene->screen;
+        $timestamp = $widgetData['timestamp'];
         event(new TimerStateChangedEvent($screen->uuid, [
             'state' => $state,
+            //'timestamp' => $timestamp,
             'widget_id' => $widget->id
         ]));
         return [
             'success' => true,
-            'widgetData' => $widgetData
+            'widgetData' => $widgetData,
+            'state' => $state
         ];
     }
 
@@ -57,7 +62,7 @@ class TimerWidgetController extends Controller
         $widget->save();
         $screen = $widget->scene->screen;
         event(new WidgetPositionChangedEvent($screen->uuid, [
-            'widget' => $widget->id,
+            'widget_id' => $widget->id,
             'position' => $widgetData['position']
         ]));
         return [

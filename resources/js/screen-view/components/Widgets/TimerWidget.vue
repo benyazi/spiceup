@@ -85,9 +85,10 @@
         },
         created() {
             var channel = PusherApp.subscribe('score-widget-' + this.screen.uuid);
-            channel.bind('StateChanged', this.changeState);
+            channel.bind('TimerStateChanged', this.changeState);
             channel.bind('TimeChanged', this.changeTime);
             channel.bind('AdvancedSizeChanged', this.changeAdvancedSize);
+            channel.bind('WidgetPositionChanged', this.changePositionScore);
         },
         methods: {
             getFullMinutes(seconds){
@@ -108,7 +109,9 @@
                 }
             },
             changeState(data) {
-                this.timestamp = data.timestamp;
+                if(data.timestamp !== undefined) {
+                    this.timestamp = data.timestamp;
+                }
                 this.state = data.state;
             },
             changeTime(data) {
@@ -122,6 +125,11 @@
                     return;
                 }
                 this.timestamp++;
+            },
+            changePositionScore(data) {
+                if(data.widget_id == this.widget.id) {
+                    this.widget.data.position = data.position;
+                }
             }
         }
     }

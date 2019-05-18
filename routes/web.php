@@ -29,3 +29,5 @@ Route::get('/data/{uuid}', 'Screen\ShowController@data')->name('screen.data');
 
 Route::get('/widget/score/{widgetId}/{team}/{type}', 'Screen\ScoreWidgetController@change')->name('widget.score.change');
 Route::post('/widget/score/{widgetId}/saveSetting', 'Screen\ScoreWidgetController@setting')->name('widget.score.setting');
+Route::get('/widget/timer/{widgetId}/{state}', 'Screen\TimerWidgetController@state')->name('widget.timer.state');
+Route::post('/widget/timer/{widgetId}/saveSetting', 'Screen\TimerWidgetController@setting')->name('widget.timer.setting');

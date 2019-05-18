@@ -119,9 +119,16 @@
         },
         methods: {
             updateTime() {},
+            saveSetting() {},
             updateAdvancedTime() {},
             changeState() {
-
+                let newState = (this.state === 'pause')?'play':'pause';
+                let url = '/widget/timer/'+this.widget.id+'/'+newState;
+                this.isLoading = true;
+                axios.get(url).then((resp) => {
+                    this.state = resp.data.state;
+                    this.isLoading = false;
+                });
             },
             loadData() {
                 this.part = this.widget.data.part;
@@ -141,7 +148,6 @@
             getFullMinutes(seconds){
                 return (seconds - seconds % 60) / 60;
             },
-
             secondInterval() {
                 if(this.state == 'pause') {
                     return;
