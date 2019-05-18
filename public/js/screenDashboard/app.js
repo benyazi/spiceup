@@ -1801,6 +1801,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['uuid'],
   data: function data() {
@@ -1834,6 +1841,110 @@ __webpack_require__.r(__webpack_exports__);
       axios.get('/data/' + this.uuid).then(function (resp) {
         _this2.screen = resp.data;
         _this2.isLoading = false;
+      });
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue?vue&type=script&lang=js&":
+/*!****************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  created: function created() {},
+  mounted: function mounted() {
+    this.refreshData();
+    this.isLoading = false;
+  },
+  props: ['screen', 'widget'],
+  data: function data() {
+    return {
+      isLoading: true,
+      setting: {
+        position: {
+          top: 0,
+          left: 0
+        }
+      }
+    };
+  },
+  methods: {
+    saveSetting: function saveSetting() {
+      var _this = this;
+
+      this.isLoading = true;
+      var setting = this.setting;
+      axios.post('/widget/setting/' + this.widget.id, {
+        setting: setting
+      }).then(function (resp) {
+        _this.widget.data = resp.data.widgetData;
+
+        _this.refreshData();
+
+        _this.isLoading = false;
+      });
+    },
+    refreshData: function refreshData() {
+      this.setting.position = this.widget.data.position;
+    },
+    activate: function activate() {
+      var _this2 = this;
+
+      this.isLoading = true;
+      var value = !this.widget.is_active;
+      axios.get('/widget/activate/' + this.widget.id + '/' + value).then(function (resp) {
+        _this2.isLoading = false;
+        _this2.widget.is_active = value;
       });
     }
   }
@@ -37883,7 +37994,15 @@ var render = function() {
             _vm._v(" "),
             _c("option", { attrs: { value: "timer" } }, [_vm._v("Timer")]),
             _vm._v(" "),
-            _c("option", { attrs: { value: "squad" } }, [_vm._v("Squad")])
+            _c("option", { attrs: { value: "squad" } }, [_vm._v("Squad")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "github_push" } }, [
+              _vm._v("Github Push")
+            ]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "github_rate" } }, [
+              _vm._v("Github Rate")
+            ])
           ]
         ),
         _vm._v(" "),
@@ -37949,6 +38068,19 @@ var render = function() {
                               1
                             )
                           ]
+                        : widget.type == "github_push"
+                        ? [
+                            _c(
+                              "div",
+                              { staticClass: "col-4" },
+                              [
+                                _c("github-push-widget", {
+                                  attrs: { screen: _vm.screen, widget: widget }
+                                })
+                              ],
+                              1
+                            )
+                          ]
                         : _vm._e()
                     ]
                   : _vm._e()
@@ -37961,6 +38093,169 @@ var render = function() {
   ])
 }
 var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue?vue&type=template&id=3c68b39c&":
+/*!********************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue?vue&type=template&id=3c68b39c& ***!
+  \********************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "b_widgetDashboardWrap b_dsw",
+      class: { "is-loading": _vm.isLoading }
+    },
+    [
+      _c("div", { staticClass: "row mb-1" }, [
+        _c("div", { staticClass: "col-12" }, [
+          _c("div", { staticClass: "input-group mb-1" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.setting.position.top,
+                  expression: "setting.position.top"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "text", placeholder: "20" },
+              domProps: { value: _vm.setting.position.top },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.setting.position, "top", $event.target.value)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _vm._m(1)
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group mb-1" }, [
+            _vm._m(2),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.setting.position.left,
+                  expression: "setting.position.left"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "text", placeholder: "20" },
+              domProps: { value: _vm.setting.position.left },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.setting.position, "left", $event.target.value)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _vm._m(3)
+          ]),
+          _vm._v(" "),
+          _c("div", [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                on: {
+                  click: function($event) {
+                    return _vm.saveSetting()
+                  }
+                }
+              },
+              [_vm._v("Save setting")]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-12" }, [
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-primary w-100",
+              class: {
+                "btn-primary": !_vm.widget.is_active,
+                "btn-danger": _vm.widget.is_active
+              },
+              on: { click: _vm.activate }
+            },
+            [
+              _vm.widget.is_active
+                ? [_vm._v("\n                    Отключить\n                ")]
+                : [_vm._v("\n                    Включить\n                ")]
+            ],
+            2
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _vm.isLoading ? _c("div", { staticClass: "curtain" }) : _vm._e()
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("Position Top")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-append" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("px")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("Position Left")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-append" }, [
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("px")])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -38093,7 +38388,7 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "row mb-1" }, [
         _c("div", { staticClass: "col-12" }, [
           _c("div", { staticClass: "input-group mb-1" }, [
             _vm._m(0),
@@ -38276,7 +38571,14 @@ var render = function() {
         _c("div", { staticClass: "col-12" }, [
           _c(
             "button",
-            { staticClass: "btn btn-primary", on: { click: _vm.activate } },
+            {
+              staticClass: "btn btn-primary w-100",
+              class: {
+                "btn-primary": !_vm.widget.is_active,
+                "btn-danger": _vm.widget.is_active
+              },
+              on: { click: _vm.activate }
+            },
             [
               _vm.widget.is_active
                 ? [_vm._v("\n                    Отключить\n                ")]
@@ -51419,6 +51721,7 @@ Vue.component('screen-dashboard', __webpack_require__(/*! ./components/ScreenDas
 Vue.component('score-widget', __webpack_require__(/*! ./components/Widgets/ScoreWidget.vue */ "./resources/js/screen-dashboard/components/Widgets/ScoreWidget.vue")["default"]);
 Vue.component('timer-widget', __webpack_require__(/*! ./components/Widgets/TimerWidget.vue */ "./resources/js/screen-dashboard/components/Widgets/TimerWidget.vue")["default"]);
 Vue.component('squad-widget', __webpack_require__(/*! ./components/Widgets/SquadWidget.vue */ "./resources/js/screen-dashboard/components/Widgets/SquadWidget.vue")["default"]);
+Vue.component('github-push-widget', __webpack_require__(/*! ./components/Widgets/GithubPushWidget.vue */ "./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -51560,6 +51863,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ScreenDashboardComponent_vue_vue_type_template_id_7e531e30___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ScreenDashboardComponent_vue_vue_type_template_id_7e531e30___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue":
+/*!*******************************************************************************!*\
+  !*** ./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue ***!
+  \*******************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _GithubPushWidget_vue_vue_type_template_id_3c68b39c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./GithubPushWidget.vue?vue&type=template&id=3c68b39c& */ "./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue?vue&type=template&id=3c68b39c&");
+/* harmony import */ var _GithubPushWidget_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./GithubPushWidget.vue?vue&type=script&lang=js& */ "./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _GithubPushWidget_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _GithubPushWidget_vue_vue_type_template_id_3c68b39c___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _GithubPushWidget_vue_vue_type_template_id_3c68b39c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue?vue&type=script&lang=js&":
+/*!********************************************************************************************************!*\
+  !*** ./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GithubPushWidget_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib??ref--4-0!../../../../../node_modules/vue-loader/lib??vue-loader-options!./GithubPushWidget.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GithubPushWidget_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue?vue&type=template&id=3c68b39c&":
+/*!**************************************************************************************************************!*\
+  !*** ./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue?vue&type=template&id=3c68b39c& ***!
+  \**************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_GithubPushWidget_vue_vue_type_template_id_3c68b39c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib??vue-loader-options!./GithubPushWidget.vue?vue&type=template&id=3c68b39c& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/screen-dashboard/components/Widgets/GithubPushWidget.vue?vue&type=template&id=3c68b39c&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_GithubPushWidget_vue_vue_type_template_id_3c68b39c___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_GithubPushWidget_vue_vue_type_template_id_3c68b39c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

@@ -1781,6 +1781,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['uuid'],
   data: function data() {
@@ -1809,6 +1812,111 @@ __webpack_require__.r(__webpack_exports__);
         _this.screen = resp.data;
         _this.isLoading = false;
       });
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/screen-view/components/Widgets/GithubPushWidget.vue?vue&type=script&lang=js&":
+/*!***********************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/screen-view/components/Widgets/GithubPushWidget.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  created: function created() {
+    var channel = PusherApp.subscribe('score-widget-' + this.screen.uuid);
+    channel.bind('WidgetPositionChanged', this.changePositionScore);
+    channel.bind('WidgetActivateChanged', this.changeActivate);
+    var channelGithub = PusherApp.subscribe('scope-github');
+    channelGithub.bind('NewPush', this.newPush);
+  },
+  computed: {
+    positionTop: function positionTop() {
+      if (this.widget.data.position) {
+        return this.widget.data.position.top + 'px';
+      }
+
+      return 0;
+    },
+    positionLeft: function positionLeft() {
+      if (this.widget.data.position) {
+        return this.widget.data.position.left + 'px';
+      }
+
+      return 0;
+    }
+  },
+  mounted: function mounted() {
+    this.pushes = [];
+  },
+  props: ['screen', 'widget'],
+  data: function data() {
+    return {
+      pushes: []
+    };
+  },
+  methods: {
+    newPush: function newPush(data) {
+      this.pushes.push(data.pushItem);
+    },
+    changeActivate: function changeActivate(data) {
+      if (data.widget_id != this.widget.id) {
+        return;
+      }
+
+      this.widget.is_active = data.value;
+    },
+    updateTeamData: function updateTeamData(data) {
+      if (data.widget_id != this.widget.id) {
+        return;
+      }
+
+      if (data.data.team) {
+        this.teamHome = data.data.team.home;
+        this.teamAway = data.data.team.away;
+      }
+
+      if (data.data.color) {
+        this.teamHomeColor = data.data.color.home;
+        this.teamAwayColor = data.data.color.away;
+      }
+    },
+    changeScore: function changeScore(data) {
+      if (data.widget_id != this.widget.id) {
+        return;
+      }
+
+      if (data.team == 'home') {
+        this.scoreHome = data.score;
+      } else {
+        this.scoreAway = data.score;
+      }
+    },
+    changePositionScore: function changePositionScore(data) {
+      if (data.widget_id != this.widget.id) {
+        return;
+      }
+
+      this.widget.data.position = data.position;
     }
   }
 });
@@ -2012,6 +2120,7 @@ __webpack_require__.r(__webpack_exports__);
     var channel = PusherApp.subscribe('score-widget-' + this.screen.uuid);
     channel.bind('WidgetPositionChanged', this.changePositionScore);
     channel.bind('UpdateSquad', this.UpdateSquad);
+    channel.bind('WidgetActivateChanged', this.changeActivate);
   },
   computed: {
     positionTop: function positionTop() {
@@ -46461,6 +46570,12 @@ var render = function() {
                         attrs: { screen: _vm.screen, widget: widget }
                       })
                     ]
+                  : widget.type == "github_push"
+                  ? [
+                      _c("github-push-widget", {
+                        attrs: { screen: _vm.screen, widget: widget }
+                      })
+                    ]
                   : _vm._e()
               ]
             })
@@ -46468,6 +46583,66 @@ var render = function() {
         : _vm._e()
     ],
     2
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/screen-view/components/Widgets/GithubPushWidget.vue?vue&type=template&id=e0246ffa&":
+/*!***************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/screen-view/components/Widgets/GithubPushWidget.vue?vue&type=template&id=e0246ffa& ***!
+  \***************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "b_widgetWrap b_gp",
+      style: {
+        top: _vm.positionTop,
+        left: _vm.positionLeft,
+        display: _vm.widget.is_active ? "block" : "none"
+      }
+    },
+    [
+      _c(
+        "div",
+        {},
+        [
+          _c("div", { staticClass: "gp_title" }, [_vm._v("Свежие пуши")]),
+          _vm._v(" "),
+          _vm._l(_vm.pushes, function(item) {
+            return _c("div", { staticClass: "gp_item" }, [
+              _c("div", { staticClass: "gp_item_name" }, [
+                _c("strong", [_vm._v(_vm._s(item.sender))]),
+                _vm._v(" -> "),
+                _c("strong", [_vm._v(_vm._s(item.project))])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "gp_item_message" }, [
+                _vm._v(
+                  "\n                " + _vm._s(item.message) + "\n            "
+                )
+              ])
+            ])
+          })
+        ],
+        2
+      )
+    ]
   )
 }
 var staticRenderFns = []
@@ -58998,6 +59173,7 @@ Vue.component('screen-view', __webpack_require__(/*! ./components/ScreenViewComp
 Vue.component('score-widget', __webpack_require__(/*! ./components/Widgets/ScoreWidget.vue */ "./resources/js/screen-view/components/Widgets/ScoreWidget.vue")["default"]);
 Vue.component('timer-widget', __webpack_require__(/*! ./components/Widgets/TimerWidget.vue */ "./resources/js/screen-view/components/Widgets/TimerWidget.vue")["default"]);
 Vue.component('squad-widget', __webpack_require__(/*! ./components/Widgets/SquadWidget.vue */ "./resources/js/screen-view/components/Widgets/SquadWidget.vue")["default"]);
+Vue.component('github-push-widget', __webpack_require__(/*! ./components/Widgets/GithubPushWidget.vue */ "./resources/js/screen-view/components/Widgets/GithubPushWidget.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -59140,6 +59316,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ScreenViewComponent_vue_vue_type_template_id_2ecfb60c___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ScreenViewComponent_vue_vue_type_template_id_2ecfb60c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/screen-view/components/Widgets/GithubPushWidget.vue":
+/*!**************************************************************************!*\
+  !*** ./resources/js/screen-view/components/Widgets/GithubPushWidget.vue ***!
+  \**************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _GithubPushWidget_vue_vue_type_template_id_e0246ffa___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./GithubPushWidget.vue?vue&type=template&id=e0246ffa& */ "./resources/js/screen-view/components/Widgets/GithubPushWidget.vue?vue&type=template&id=e0246ffa&");
+/* harmony import */ var _GithubPushWidget_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./GithubPushWidget.vue?vue&type=script&lang=js& */ "./resources/js/screen-view/components/Widgets/GithubPushWidget.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _GithubPushWidget_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _GithubPushWidget_vue_vue_type_template_id_e0246ffa___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _GithubPushWidget_vue_vue_type_template_id_e0246ffa___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/screen-view/components/Widgets/GithubPushWidget.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/screen-view/components/Widgets/GithubPushWidget.vue?vue&type=script&lang=js&":
+/*!***************************************************************************************************!*\
+  !*** ./resources/js/screen-view/components/Widgets/GithubPushWidget.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GithubPushWidget_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib??ref--4-0!../../../../../node_modules/vue-loader/lib??vue-loader-options!./GithubPushWidget.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/screen-view/components/Widgets/GithubPushWidget.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_GithubPushWidget_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/screen-view/components/Widgets/GithubPushWidget.vue?vue&type=template&id=e0246ffa&":
+/*!*********************************************************************************************************!*\
+  !*** ./resources/js/screen-view/components/Widgets/GithubPushWidget.vue?vue&type=template&id=e0246ffa& ***!
+  \*********************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_GithubPushWidget_vue_vue_type_template_id_e0246ffa___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib??vue-loader-options!./GithubPushWidget.vue?vue&type=template&id=e0246ffa& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/screen-view/components/Widgets/GithubPushWidget.vue?vue&type=template&id=e0246ffa&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_GithubPushWidget_vue_vue_type_template_id_e0246ffa___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_GithubPushWidget_vue_vue_type_template_id_e0246ffa___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

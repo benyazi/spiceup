@@ -23,6 +23,7 @@ Vue.component('screen-view', require('./components/ScreenViewComponent.vue').def
 Vue.component('score-widget', require('./components/Widgets/ScoreWidget.vue').default);
 Vue.component('timer-widget', require('./components/Widgets/TimerWidget.vue').default);
 Vue.component('squad-widget', require('./components/Widgets/SquadWidget.vue').default);
+Vue.component('github-push-widget', require('./components/Widgets/GithubPushWidget.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

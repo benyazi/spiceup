@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Screen;
 
 use App\Events\ScoreWidget\CustomWidgetEventEvent;
 use App\Events\ScoreWidget\ScoreChangedEvent;
+use App\Events\ScoreWidget\ScorePositionChangedEvent;
+use App\Events\ScoreWidget\WidgetPositionChangedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Scene;
 use App\Models\SceneWidget;
@@ -86,6 +88,28 @@ class ScreenController extends Controller
         return [
             'success' => true,
             'newWidget' => $widget->toArray()
+        ];
+    }
+
+    public function widgetSetting(Request $request, $widgetId)
+    {
+        $widget = SceneWidget::find($widgetId);
+        $widgetData = $widget->data;
+        $setting = $request->get('setting');
+        $widgetData['position'] = [
+            'top' => $setting['position']['top'],
+            'left' => $setting['position']['left'],
+        ];
+        $widget->data = $widgetData;
+        $widget->save();
+        $screen = $widget->scene->screen;
+        event(new WidgetPositionChangedEvent($screen->uuid, [
+            'position' => $widgetData['position'],
+            'widget_id' => $widget->id
+        ]));
+        return [
+            'success' => true,
+            'widgetData' => $widgetData
         ];
     }
 

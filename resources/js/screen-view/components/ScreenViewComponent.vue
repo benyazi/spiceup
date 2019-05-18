@@ -11,6 +11,9 @@
                 <template v-else-if="widget.type == 'squad'">
                     <squad-widget :screen="screen" :widget="widget"></squad-widget>
                 </template>
+                <template v-else-if="widget.type == 'github_push'">
+                    <github-push-widget :screen="screen" :widget="widget"></github-push-widget>
+                </template>
             </template>
         </template>
     </div>

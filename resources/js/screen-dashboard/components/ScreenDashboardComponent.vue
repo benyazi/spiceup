@@ -6,6 +6,8 @@
                     <option value="score">Score</option>
                     <option value="timer">Timer</option>
                     <option value="squad">Squad</option>
+                    <option value="github_push">Github Push</option>
+                    <option value="github_rate">Github Rate</option>
                 </select>
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" @click="addNewWidget">Add widget</button>
@@ -28,6 +30,11 @@
                     <template v-else-if="widget.type == 'squad'">
                         <div class="col-4">
                         <squad-widget :screen="screen" :widget="widget"></squad-widget>
+                        </div>
+                    </template>
+                    <template v-else-if="widget.type == 'github_push'">
+                        <div class="col-4">
+                        <github-push-widget :screen="screen" :widget="widget"></github-push-widget>
                         </div>
                     </template>
                 </template>

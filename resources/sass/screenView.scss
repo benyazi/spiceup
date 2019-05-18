@@ -19,7 +19,30 @@ html, body {
   //background-color: #1b4b72;
   background-color: transparent;
 }
-
+.b_gp {
+  position: absolute;
+  height: 400px;
+  width: 300px;
+  overflow: hidden;
+  .gp_title {
+    font-weight: bold;
+    font-size: 18px;
+    padding: 5px 10px;
+    text-align: center;
+    background-color: #1b1e21;
+    color:#fff;
+  }
+  .gp_item {
+    border-bottom: 1px solid #1d2124;
+  }
+  .gp_item_name {
+    padding: 5px 10px;
+  }
+  .gp_item_message {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}
 .b_sw {
   position: absolute;
   top:20px;

@@ -19,6 +19,9 @@ Route::group([], function () {
 });
 Auth::routes();
 
+Route::post('/github/webhook', 'Github\WebhookController@webhook')->name('githubWebhook');
+
+
 Route::get('/screens', 'Screen\ScreenController@list')->name('screen.list');
 Route::get('/screen/{id}/addwidget/{type}', 'Screen\ScreenController@addWidget')->name('screen.addwidget');
 Route::get('/screen/edit/{id}', 'Screen\ScreenController@edit')->name('screen.edit');
@@ -26,6 +29,8 @@ Route::get('/screen/remove/{id}', 'Screen\ScreenController@remove')->name('scree
 Route::get('/screen/add', 'Screen\ScreenController@add')->name('screen.add');
 Route::get('/s/{uuid}', 'Screen\ShowController@view')->name('screen.view');
 Route::get('/data/{uuid}', 'Screen\ShowController@data')->name('screen.data');
+
+Route::post('/widget/setting/{widgetId}', 'Screen\ScreenController@widgetSetting')->name('widget.setting');
 
 Route::get('/widget/activate/{widgetId}/{value}', 'Screen\ScreenController@activate')->name('widget.activate');
 

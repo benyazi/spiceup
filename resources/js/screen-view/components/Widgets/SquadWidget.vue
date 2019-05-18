@@ -64,6 +64,7 @@
             var channel = PusherApp.subscribe('score-widget-' + this.screen.uuid);
             channel.bind('WidgetPositionChanged', this.changePositionScore);
             channel.bind('UpdateSquad', this.UpdateSquad);
+            channel.bind('WidgetActivateChanged', this.changeActivate);
         },
         computed: {
             positionTop() {

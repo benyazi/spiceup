@@ -10676,6 +10676,35 @@ body {
   background-color: transparent;
 }
 
+.b_gp {
+  position: absolute;
+  height: 400px;
+  width: 300px;
+  overflow: hidden;
+}
+
+.b_gp .gp_title {
+  font-weight: bold;
+  font-size: 18px;
+  padding: 5px 10px;
+  text-align: center;
+  background-color: #1b1e21;
+  color: #fff;
+}
+
+.b_gp .gp_item {
+  border-bottom: 1px solid #1d2124;
+}
+
+.b_gp .gp_item_name {
+  padding: 5px 10px;
+}
+
+.b_gp .gp_item_message {
+  font-size: 12px;
+  padding: 5px 10px;
+}
+
 .b_sw {
   position: absolute;
   top: 20px;
