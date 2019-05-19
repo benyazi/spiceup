@@ -5,5 +5,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Commit extends Model
 {
-    protected $table = 'guthub_commits';
+    protected $table = 'github_commits';
 }

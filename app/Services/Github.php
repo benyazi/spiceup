@@ -129,7 +129,7 @@ class Github
 
         $rates = [];
         //get rates
-        $users = DB::table('guthub_commits')
+        $users = DB::table('github_commits')
             ->select(DB::raw('count(*) as commit_count_all, author, sum(comment_count) as comment_count_all'))
             ->where('author', '<>', 'noname')
             ->whereNotNull('author')
