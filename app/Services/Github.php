@@ -124,8 +124,9 @@ class Github
         }
     }
 
-    public function updateRate()
+    public function getRates()
     {
+
         $rates = [];
         //get rates
         $users = DB::table('guthub_commits')
@@ -146,8 +147,12 @@ class Github
             ];
             $place++;
         }
+        return $rates;
+    }
+    public function updateRate()
+    {
         event(new GithubEvent('UpdatedRate', [
-            'rates' => $rates
+            'rates' => $this->getRates()
         ]));
     }
 }

@@ -34,6 +34,9 @@
         },
         mounted() {
             this.rates = [];
+            if(this.widget.data.rates != undefined &&  this.widget.data.rates.length > 0) {
+                this.rates = this.widget.data.rates;
+            }
         },
         props: ['screen','widget'],
         data() {

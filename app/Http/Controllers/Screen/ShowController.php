@@ -7,6 +7,7 @@ use App\Models\Github\Push;
 use App\Models\Scene;
 use App\Models\SceneWidget;
 use App\Models\Screen;
+use App\Services\Github;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -60,6 +61,12 @@ class ShowController extends Controller
                 foreach ($pushes as $push) {
                     $widgetData['pushes'][] = $push->toArray();
                 };
+                $widget->data = $widgetData;
+                $widget->save();
+            }
+            if($widget->widget_type == 'github_rate') {
+                $gs = new Github();
+                $widgetData['rates'] = $gs->getRates();
                 $widget->data = $widgetData;
                 $widget->save();
             }
