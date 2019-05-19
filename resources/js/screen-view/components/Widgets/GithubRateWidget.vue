@@ -16,7 +16,7 @@
             channel.bind('WidgetPositionChanged', this.changePositionScore);
             channel.bind('WidgetActivateChanged', this.changeActivate);
             var channelGithub = PusherApp.subscribe('scope-github');
-            channelGithub.bind('NewPush', this.newPush);
+            channelGithub.bind('UpdatedRate', this.updateRate);
         },
         computed: {
             positionTop() {
@@ -42,7 +42,7 @@
             }
         },
         methods: {
-            newPush(data) {
+            updateRate(data) {
                 if(data.rates) {
                     this.rates = data.rates;
                 }

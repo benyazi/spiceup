@@ -3,8 +3,10 @@ namespace App\Services;
 
 use App\Events\ScoreWidget\CustomWidgetEventEvent;
 use App\Events\GithubEvent;
+use App\Models\Github\Commit;
 use App\Models\Github\Events;
 use App\Models\Github\Push;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\DB;
 
 class Github
@@ -44,13 +46,93 @@ class Github
         $push->commit_count = $commits;
         //save
         $push->save();
+        event(new GithubEvent('NewPush', [
+            'pushItem' => $push->toArray()
+        ]));
+    }
+
+    public function getRepos()
+    {
+        $url = 'https://api.github.com/orgs/hackathonbrn/repos';
+        $client = new Client();
+        $response = $client->get($url);
+        $json = $response->getBody()->getContents();
+        $data = json_decode($json, true);
+        $repos = [];
+        foreach ($data as $item) {
+            $repos[] = [
+                'id' => $item['id'],
+                'name' => $item['name'],
+            ];
+        }
+        return $repos;
+    }
+
+    public function getCommits($repName)
+    {
+        $url = 'https://api.github.com/repos/hackathonbrn/'.$repName.'/commits';
+        $client = new Client();
+        $response = $client->get($url);
+        $json = $response->getBody()->getContents();
+        $data = json_decode($json, true);
+        $commits = [];
+        foreach ($data as $item) {
+            $commits[] = [
+                'commit' => $item['commit'],
+                'author' => $item['author'],
+                'project' => $repName,
+                'sha' => $item['sha']
+            ];
+        }
+        return $commits;
+    }
+
+    public function updateStatistic()
+    {
+        $repos = $this->getRepos();
+        foreach ($repos as $rep)
+        {
+            echo 'Updating repos '.$rep['name'].PHP_EOL;
+            $commits = $this->getCommits($rep['name']);
+            echo 'Found commits '.count($commits).PHP_EOL;
+            foreach ($commits as $commitData)
+            {
+                $commit = Commit::query()
+                    ->where('sha', $commitData['sha'])
+                    ->where('project', $rep['name'])
+                    ->first();
+                if(empty($commit)) {
+                    $commit = new  Commit();
+                    $commit->sha = $commitData['sha'];
+                    $commit->project = $rep['name'];
+                }
+                if(isset($commitData['author']) && isset($commitData['author']['login'])) {
+                    $commit->author = $commitData['author']['login'];
+                } else if($commitData['commit'] && isset($commitData['commit']['author'])) {
+                    $commit->author = $commitData['commit']['author']['name'];
+                } else {
+                    $commit->author = 'noname';
+                }
+                if(isset($commitData['commit']) && isset($commitData['commit']['message'])) {
+                    $commit->message = $commitData['commit']['message'];
+                }
+                if(isset($commitData['commit']) && isset($commitData['commit']['comment_count'])) {
+                    $commit->comment_count = $commitData['commit']['comment_count'];
+                }
+                $commit->save();
+            }
+        }
+    }
+
+    public function updateRate()
+    {
         $rates = [];
         //get rates
-        $users = DB::table('github_pushes')
-            ->select(DB::raw('sum(commit_count) as commit_count_all, sender'))
-            ->where('commit_count', '>', 0)
-            ->whereNotNull('sender')
-            ->groupBy('sender')
+        $users = DB::table('guthub_commits')
+            ->select(DB::raw('count(*) as commit_count_all, author, sum(comment_count) as comment_count_all'))
+            ->where('author', '<>', 'noname')
+            ->whereNotNull('author')
+            ->groupBy('author')
             ->orderBy('commit_count_all', 'DESC')
             ->limit(10)
             ->get();
@@ -58,13 +140,13 @@ class Github
         foreach ($users as $user) {
             $rates[] = [
                 'place' => $place,
-                'sender' => $user->sender,
-                'count' => $user->commit_count_all
+                'sender' => $user->author,
+                'count' => $user->commit_count_all,
+                'comments' => $user->comment_count_all
             ];
             $place++;
         }
-        event(new GithubEvent('NewPush', [
-            'pushItem' => $push->toArray(),
+        event(new GithubEvent('UpdatedRate', [
             'rates' => $rates
         ]));
     }

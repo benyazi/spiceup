@@ -8,9 +8,9 @@ use App\Services\Github;
 use Illuminate\Console\Command;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
-class GenerateCommand extends Command
+class RateCommand extends Command
 {
-    protected $signature = 'data:generate';
+    protected $signature = 'rate:update';
 
     /**
      * The console command description.
@@ -37,6 +37,7 @@ class GenerateCommand extends Command
     public function handle()
     {
         $githubService = new Github();
-        $githubService->getRepos();
+        $githubService->updateStatistic();
+        $githubService->updateRate();
     }
 }
