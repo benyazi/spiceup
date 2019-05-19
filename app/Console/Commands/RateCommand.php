@@ -36,6 +36,7 @@ class RateCommand extends Command
      */
     public function handle()
     {
+        //Github Service
         $githubService = new Github();
         $githubService->updateStatistic();
         $githubService->updateRate();
