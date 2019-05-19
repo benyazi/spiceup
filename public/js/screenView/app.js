@@ -1853,6 +1853,9 @@ __webpack_require__.r(__webpack_exports__);
     channelGithub.bind('NewPush', this.newPush);
   },
   computed: {
+    reversedPushes: function reversedPushes() {
+      return this.pushes.slice().reverse();
+    },
     positionTop: function positionTop() {
       if (this.widget.data.position) {
         return this.widget.data.position.top + 'px';
@@ -46719,7 +46722,7 @@ var render = function() {
         [
           _c("div", { staticClass: "gp_title" }, [_vm._v("Свежие пуши")]),
           _vm._v(" "),
-          _vm._l(_vm.pushes, function(item) {
+          _vm._l(_vm.reversedPushes, function(item) {
             return _c("div", { staticClass: "gp_item" }, [
               _c("div", { staticClass: "gp_item_name" }, [
                 _c("strong", [_vm._v(_vm._s(item.sender))]),

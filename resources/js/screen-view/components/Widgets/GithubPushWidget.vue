@@ -2,7 +2,7 @@
     <div class="b_widgetWrap b_gp" :style="{top:positionTop,left:positionLeft,display:(widget.is_active)?'block':'none'}">
         <div class="">
             <div class="gp_title">Свежие пуши</div>
-            <div class="gp_item" v-for="item in pushes">
+            <div class="gp_item" v-for="item in reversedPushes">
                 <div class="gp_item_name"><strong>{{item.sender}}</strong> -> <strong>{{item.project}}</strong></div>
                 <div class="gp_item_message">
                     {{item.message}}
@@ -22,6 +22,9 @@
             channelGithub.bind('NewPush', this.newPush);
         },
         computed: {
+            reversedPushes() {
+                return this.pushes.slice().reverse();
+            },
             positionTop() {
                 if(this.widget.data.position) {
                     return this.widget.data.position.top + 'px';
