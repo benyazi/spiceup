@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Screen;
 
 use App\Http\Controllers\Controller;
+use App\Models\Github\Push;
 use App\Models\Scene;
 use App\Models\SceneWidget;
 use App\Models\Screen;
@@ -50,6 +51,18 @@ class ShowController extends Controller
         $widgetArray = [];
         foreach ($widgets as $widget) {
             $widgetData = $widget->data;
+            if($widget->widget_type == 'github_push') {
+                $widgetData['pushes'] = [];
+                $pushes = Push::query()
+                    ->where('commit_count', ">", 0)
+                    ->orderBy('created_at', 'DESC')
+                    ->limit(10)->get();
+                foreach ($pushes as $push) {
+                    $widgetData['pushes'][] = $push->toArray();
+                };
+                $widget->data = $widgetData;
+                $widget->save();
+            }
             if(empty($widgetData) && $widget->widget_type == 'timer') {
                 $startPoint = 1558175864;
                 $currentTimestamp = Carbon::now()->timestamp;

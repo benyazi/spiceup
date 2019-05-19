@@ -37,6 +37,9 @@
         },
         mounted() {
             this.pushes = [];
+            if(this.widget.data.pushes != undefined &&  this.widget.data.pushes.length > 0) {
+                this.pushes = this.widget.data.pushes;
+            }
         },
         props: ['screen','widget'],
         data() {

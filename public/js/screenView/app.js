@@ -1870,6 +1870,10 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     this.pushes = [];
+
+    if (this.widget.data.pushes != undefined && this.widget.data.pushes.length > 0) {
+      this.pushes = this.widget.data.pushes;
+    }
   },
   props: ['screen', 'widget'],
   data: function data() {
