@@ -56,8 +56,8 @@ class ShowController extends Controller
                 $widgetData['pushes'] = [];
                 $pushes = Push::query()
                     ->where('commit_count', ">", 0)
-                    ->orderBy('created_at', 'DESC')
-                    ->limit(10)->get();
+                    ->orderBy('created_at', 'ASC')
+                    ->get();
                 foreach ($pushes as $push) {
                     $widgetData['pushes'][] = $push->toArray();
                 };
