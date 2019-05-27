@@ -13,11 +13,11 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col-6">
-                                {{$screen->name}}
+                                <strong>{{$screen->name}}</strong>
                             </div>
                             <div class="col-6 text-right">
-                                <a class="btn btn-info" target="_blank" href="{{env('APP_URL').'/s/'.$screen->uuid}}">
-                                    View
+                                <a title="{{ __('View screen') }}" class="btn btn-primary btn-sm" target="_blank" href="{{env('APP_URL').'/s/'.$screen->uuid}}">
+                                    <i class="fa fa-eye"></i>
                                 </a>
                             </div>
                         </div>

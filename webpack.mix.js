@@ -12,6 +12,7 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/screen-view/app.js', 'public/js/screenView')
+    .sass('resources/sass/app.scss', 'public/css')
     .sass('resources/sass/screenView.scss', 'public/css/screenView')
     .js('resources/js/screen-dashboard/app.js', 'public/js/screenDashboard')
     .sass('resources/sass/screenDashboard.scss', 'public/css/screenDashboard');

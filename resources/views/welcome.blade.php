@@ -3,18 +3,16 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title>Laravel</title>
-
+        <title>SpiceApp - интерактивные дашбоарды</title>
         <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Exo+2:400,700|PT+Sans+Narrow:400,700|Roboto:400,700&display=swap&subset=cyrillic" rel="stylesheet">
 
         <!-- Styles -->
         <style>
             html, body {
-                background-color: #fff;
+                background-color: lavenderblush;
                 color: #636b6f;
-                font-family: 'Nunito', sans-serif;
+                font-family: 'Exo 2', sans-serif;
                 font-weight: 200;
                 height: 100vh;
                 margin: 0;
@@ -80,8 +78,11 @@
             @endif
 
             <div class="content">
-                <div class="title m-b-md">
-                    SPICEAPP
+                <div class="m-b-md">
+                    <strong>SPICEAPP - интерактивные дашбоарды.</strong>
+                </div>
+                <div class="m-b-md">
+                    Создавайте интерактивные дашбоарды для мероприятий, или графику для трансляций.
                 </div>
             </div>
         </div>

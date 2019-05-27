@@ -1,16 +1,18 @@
 <template>
     <div class="b_screenDashboard">
         <div class="row">
-            <div class="input-group">
-                <select class="custom-select" v-model="newWidgetType">
-                    <option value="score">Score</option>
-                    <option value="timer">Timer</option>
-                    <option value="squad">Squad</option>
-                    <option value="github_push">Github Push</option>
-                    <option value="github_rate">Github Rate</option>
-                </select>
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" @click="addNewWidget">Add widget</button>
+            <div class="col-12">
+                <div class="input-group">
+                    <select class="custom-select" v-model="newWidgetType">
+                        <option value="score">Score</option>
+                        <option value="timer">Timer</option>
+                        <option value="squad">Squad</option>
+                        <option value="github_push">Github Push</option>
+                        <option value="github_rate">Github Rate</option>
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" @click="addNewWidget">Add widget</button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -9,19 +9,24 @@
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-12 col-md-8 text-right">
+                <div class="mb-3">
+                    <a class="btn btn-primary" href="{{route('screen.add')}}">
+                        <i class="fa fa-plus"></i> {{ __('Add screen') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8">
                 <div class="card">
-                    <div class="card-header">List of screens</div>
                     <div class="card-body">
-                        <div>
-                            <a class="btn btn-primary" href="{{route('screen.add')}}">+ Add screen</a>
-                        </div>
                         <table class="table table-striped">
                             <thead>
                             <tr>
                                 <th>#</th>
                                 <th>UUID</th>
-                                <th>Actions</th>
+                                <th class="text-right">{{ __('Actions') }}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -29,15 +34,15 @@
                                     <tr>
                                         <td>{{$screen->id}}</td>
                                         <td>{{$screen->uuid}}</td>
-                                        <td>
-                                            <a class="btn btn-primary" href="{{route('screen.edit', ['id' => $screen->id])}}">
-                                                Edit
+                                        <td class="text-right">
+                                            <a title="{{ __('View screen') }}" class="btn btn-primary btn-sm" target="_blank" href="{{env('APP_URL').'/s/'.$screen->uuid}}">
+                                                <i class="fa fa-eye"></i>
                                             </a>
-                                            <a class="btn btn-danger" href="{{route('screen.remove', ['id' => $screen->id])}}">
-                                                Remove
+                                            <a title="{{ __('Edit screen') }}" class="btn btn-primary btn-sm" href="{{route('screen.edit', ['id' => $screen->id])}}">
+                                                <i class="fa fa-pencil-alt"></i>
                                             </a>
-                                            <a class="btn btn-info" target="_blank" href="{{env('APP_URL').'/s/'.$screen->uuid}}">
-                                                View
+                                            <a title="{{ __('Remove screen') }}" class="btn btn-danger btn-sm" href="{{route('screen.remove', ['id' => $screen->id])}}">
+                                                <i class="fa fa-trash-alt"></i>
                                             </a>
                                         </td>
                                     </tr>

@@ -1,6 +1,7 @@
 {
     "/js/screenDashboard/app.js": "/js/screenDashboard/app.js",
     "/js/screenView/app.js": "/js/screenView/app.js",
+    "/css/app.css": "/css/app.css",
     "/css/screenView/screenView.css": "/css/screenView/screenView.css",
     "/css/screenDashboard/screenDashboard.css": "/css/screenDashboard/screenDashboard.css"
 }
