@@ -34,6 +34,7 @@ class ScreenController extends Controller
     public function list()
     {
         $list = Screen::query()
+            ->where('user_id', Auth::id())
             ->get();
         return view('screen.list', [
             'list' => $list
@@ -59,6 +60,9 @@ class ScreenController extends Controller
     {
         /** @var Screen $screen */
         $screen = Screen::find($id);
+        if($screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         $screen->delete();
         return redirect()->route('screen.list');
     }
@@ -66,6 +70,9 @@ class ScreenController extends Controller
     public function edit(Request $request, $id)
     {
         $screen = Screen::find($id);
+        if($screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         return view('screen.edit', [
             'screen' => $screen
         ]);
@@ -74,6 +81,9 @@ class ScreenController extends Controller
     public function addWidget(Request $request, $id, $type)
     {
         $screen = Screen::find($id);
+        if($screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         $scene = Scene::query()
             ->where('screen_id', $id)
             ->first();
@@ -94,6 +104,9 @@ class ScreenController extends Controller
     public function widgetSetting(Request $request, $widgetId)
     {
         $widget = SceneWidget::find($widgetId);
+        if($widget->scene->screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         $widgetData = $widget->data;
         $setting = $request->get('setting');
         $widgetData['position'] = [
@@ -116,6 +129,9 @@ class ScreenController extends Controller
     public function activate(Request $request, $widgetId, $value)
     {
         $widget = SceneWidget::find($widgetId);
+        if($widget->scene->screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         $value = ($value == 'true')?true:false;
         $widget->is_active = (boolean) $value;
         $widget->save();

@@ -13,6 +13,7 @@ use App\Models\SceneWidget;
 use App\Models\Screen;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TimerWidgetController extends Controller
 {
@@ -33,6 +34,9 @@ class TimerWidgetController extends Controller
     public function state(Request $request, $widgetId, $state)
     {
         $widget = SceneWidget::find($widgetId);
+        if($widget->scene->screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         $widgetData = $widget->data;
         $widgetData['state'] = $state;
         if($state == 'play') {
@@ -65,6 +69,9 @@ class TimerWidgetController extends Controller
     public function time(Request $request, $widgetId, $newSeconds)
     {
         $widget = SceneWidget::find($widgetId);
+        if($widget->scene->screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         $widgetData = $widget->data;
         $widgetData['timestamp'] = $newSeconds;
         if($widgetData['state'] == 'play') {
@@ -91,6 +98,9 @@ class TimerWidgetController extends Controller
     public function advancedSize(Request $request, $widgetId, $advancedSize)
     {
         $widget = SceneWidget::find($widgetId);
+        if($widget->scene->screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         $widgetData = $widget->data;
         if($advancedSize == 'clear') {
             $advancedSize = null;
@@ -111,6 +121,9 @@ class TimerWidgetController extends Controller
     public function part(Request $request, $widgetId, $value)
     {
         $widget = SceneWidget::find($widgetId);
+        if($widget->scene->screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         $widgetData = $widget->data;
         $widgetData['part']['maxValue'] = $value;
         $widget->data = $widgetData;
@@ -129,6 +142,9 @@ class TimerWidgetController extends Controller
     public function setting(Request $request, $widgetId)
     {
         $widget = SceneWidget::find($widgetId);
+        if($widget->scene->screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         $widgetData = $widget->data;
         $setting = $request->get('setting');
         $widgetData['position'] = [

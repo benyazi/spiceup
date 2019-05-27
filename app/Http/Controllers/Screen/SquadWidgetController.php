@@ -11,6 +11,7 @@ use App\Models\Scene;
 use App\Models\SceneWidget;
 use App\Models\Screen;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SquadWidgetController extends Controller
 {
@@ -31,6 +32,9 @@ class SquadWidgetController extends Controller
     public function squad(Request $request, $widgetId)
     {
         $widget = SceneWidget::find($widgetId);
+        if($widget->scene->screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         $widgetData = $widget->data;
         $squad = $request->get('squad');
         $widgetData = array_merge($widgetData, $squad);
@@ -49,6 +53,9 @@ class SquadWidgetController extends Controller
     public function setting(Request $request, $widgetId)
     {
         $widget = SceneWidget::find($widgetId);
+        if($widget->scene->screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         $widgetData = $widget->data;
         $setting = $request->get('setting');
         $widgetData['position'] = [

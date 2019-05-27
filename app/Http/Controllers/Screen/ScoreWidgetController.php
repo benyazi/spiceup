@@ -10,6 +10,7 @@ use App\Models\Scene;
 use App\Models\SceneWidget;
 use App\Models\Screen;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ScoreWidgetController extends Controller
 {
@@ -30,6 +31,9 @@ class ScoreWidgetController extends Controller
     public function change(Request $request, $widgetId, $team, $type)
     {
         $widget = SceneWidget::find($widgetId);
+        if($widget->scene->screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         $widgetData = $widget->data;
         $score = $widgetData['score'][$team];
         if($type == 'add') {
@@ -54,6 +58,9 @@ class ScoreWidgetController extends Controller
     public function setting(Request $request, $widgetId)
     {
         $widget = SceneWidget::find($widgetId);
+        if($widget->scene->screen->user_id !== Auth::id()) {
+            abort(403, 'У вас нет доступа к этому экрану');
+        }
         $widgetData = $widget->data;
         $setting = $request->get('setting');
         $widgetData['position'] = [
